@@ -6,7 +6,7 @@ import numpy
 
 from utilities.debug import assert_eq
 from tic_tac_toe_detroix23.definitions import Board, Graph
-from tic_tac_toe_detroix23 import configurations, plays, ui, exports
+from tic_tac_toe_detroix23 import configurations, plays, ui, exports, graphing
 
 def test_configurations1() -> None:
 	print("\n## Test: configurations 1.")
@@ -113,8 +113,9 @@ def test_generate_board_graph1() -> None:
 	print(ui.format_board(configurations.reverse_image(6561, player_count + 1, size[0] * size[1]), size))
 	print(ui.format_board(configurations.reverse_image(13123, player_count + 1, size[0] * size[1]), size))
 
-	exports.export_play_graph("graph0_3x3_d2", graph1, size, 1, player_count, 2)
-	
+	#exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)
+	graphing.draw("graph0_3x3_d2", graph1)
+
 	return
 
 def test_generate_board_graph2() -> None:
@@ -130,7 +131,8 @@ def test_generate_board_graph2() -> None:
 	)
 
 	print(len(graph1))
-	exports.export_play_graph("graph0_3x3", graph1, size, 1, player_count, 2)
+	exports.export_play_graph("ttt_0_3x3", graph1, size, 1, player_count, 2)
+	graphing.draw("graph0_3x3", graph1)
 
 	return
 
@@ -146,7 +148,7 @@ def main() -> None:
 
 	test_generate_board_graph1()
 
-	test_generate_board_graph2()
+	# test_generate_board_graph2()
 
 	return
 

@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "Graphviz"
+        "Graphviz",
+        "neato"
     ],
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.generateWithTypeAnnotation": true,
