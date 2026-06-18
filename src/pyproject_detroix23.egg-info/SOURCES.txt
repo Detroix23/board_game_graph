@@ -1,0 +1,11 @@
+LICENSE.md
+README.md
+pyproject.toml
+src/board_games_maths/__init__.py
+src/pyproject_detroix23.egg-info/PKG-INFO
+src/pyproject_detroix23.egg-info/SOURCES.txt
+src/pyproject_detroix23.egg-info/dependency_links.txt
+src/pyproject_detroix23.egg-info/top_level.txt
+src/tic_tac_toe_detroix23/__init__.py
+src/tic_tac_toe_detroix23/__main__.py
+src/tic_tac_toe_detroix23/configuration.py

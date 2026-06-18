@@ -1,0 +1,27 @@
+// Graph 1. Learning `graphviz` and `dot`.
+//
+// Learning with:
+// - https://graphviz.org/documentation
+// - https://www.youtube.com/watch?v=YL260-A5r2U
+
+// Graph type: `graph` or `digraph` (directed).
+digraph {
+    // Global styling.
+    node [
+        style=filled, 
+        color=red,
+    ]
+    edge [
+        style=dotted,
+        color=blue,
+    ]
+
+    // Individual styling.
+    A [ color=black ]
+
+    // Nodes
+    layout=neato;
+    B -> A
+    A -> {B, C}
+    {C, D, E} -> {E, B, F, G}
+}

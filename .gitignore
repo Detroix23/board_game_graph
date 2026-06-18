@@ -1,0 +1,10 @@
+# Virtual environment.
+/venv*
+/.venv*
+
+# Python.
+*.pyc
+**/__pycache__
+
+# Doc
+!README.md
