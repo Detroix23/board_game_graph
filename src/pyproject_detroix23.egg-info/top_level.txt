@@ -1,2 +1,0 @@
-board_games_maths
-tic_tac_toe_detroix23

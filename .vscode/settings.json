@@ -1,5 +1,9 @@
 {
     "cSpell.words": [
         "Graphviz"
-    ]
+    ],
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.generateWithTypeAnnotation": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.typeCheckingMode": "strict"
 }

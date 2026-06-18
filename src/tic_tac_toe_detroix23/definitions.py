@@ -4,10 +4,20 @@
 
 Constant and hard-coded values.
 """
+import pathlib
+from typing import Final
 
-from typing import Final, TYPE_CHECKING
+import numpy
 
-if TYPE_CHECKING:
-    from tic_tac_toe_detroix23.configurations import Configuration
+Player = numpy.uint8
 
-Graph = dict['Configuration', list['Configuration']]
+Board = numpy.typing.NDArray[Player]
+
+BoardsNext = numpy.ndarray[tuple[int, int], numpy.dtype[Player]]
+
+GraphBoard = dict[Board, BoardsNext]
+
+Graph = dict[int, numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]]
+
+
+PATH_GRAPH: Final[pathlib.Path] = pathlib.Path("./data")
