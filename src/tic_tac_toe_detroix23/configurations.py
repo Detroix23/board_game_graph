@@ -202,3 +202,19 @@ def is_full(board: Board) -> bool:
     - `0` is an empty tile.
     """
     return 0 not in board
+
+def replace(
+    board: Board,
+    origin: int,
+    destination: int,
+) -> Board:
+    """
+    Returns an updated `board` where 
+    all tiles of player ID `origin`
+    are replaced by `destination` player ID.
+    """
+    for index in range(len(board)):
+        if board[index] == origin:
+            board[index] = destination
+    
+    return board

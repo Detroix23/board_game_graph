@@ -139,24 +139,16 @@ def test_win_conditions1() -> None:
 	size: tuple[int, int] = (3, 3)
 	player_count: int = 2
 
-	win_configurations: set[int] = conditions.generate_wining_boards(size, player_count, 3)
+	win_generator = conditions.WinConditions(
+		size,
+		player_count,
+		win_length=3
+	)
+
+	win_configurations: set[int] = win_generator.generate()
 
 	print(f"w (l={len(win_configurations)}): {win_configurations}")
-
-	'''
-	index: int = 0
-	for code in win_configurations:
-		print(ui.format_board(configurations.reverse_image(
-			int(code), 
-			player_count + 1, 
-			size[0] * size[1],
-		), size))
-
-		index += 1
-		if index > 100:
-			break
-	'''
-
+	
 	exports.win_images(
 		"ttt_wins_p2_3x3",
 		win_configurations,
