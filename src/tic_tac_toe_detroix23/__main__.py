@@ -6,7 +6,7 @@ import numpy
 
 from utilities.debug import assert_eq
 from tic_tac_toe_detroix23.definitions import Board, Graph
-from tic_tac_toe_detroix23 import configurations, plays, ui, exports, graphing
+from tic_tac_toe_detroix23 import configurations, plays, conditions, ui, exports, graphing 
 
 def test_configurations1() -> None:
 	print("\n## Test: configurations 1.")
@@ -39,7 +39,6 @@ def test_configurations1() -> None:
 		2, 2, 2,
 	])
 	print(f"Image_max: {configurations.image(b3, player_count + 1)}")
-
 
 	assert_eq(c2.to_int(), 5245)
 	assert_eq(c2.get(0, 0), 0)
@@ -131,8 +130,63 @@ def test_generate_board_graph2() -> None:
 	)
 
 	print(len(graph1))
-	exports.export_play_graph("ttt_0_3x3", graph1, size, 1, player_count, 2)
+	exports.play_graph("ttt_0_3x3", graph1, size, 1, player_count, 2)
 	graphing.draw("graph0_3x3", graph1)
+
+	return
+
+def test_win_conditions1() -> None:
+	size: tuple[int, int] = (3, 3)
+	player_count: int = 2
+
+	win_configurations: set[int] = conditions.generate_wining_boards(size, player_count, 3)
+
+	print(f"w (l={len(win_configurations)}): {win_configurations}")
+
+	'''
+	index: int = 0
+	for code in win_configurations:
+		print(ui.format_board(configurations.reverse_image(
+			int(code), 
+			player_count + 1, 
+			size[0] * size[1],
+		), size))
+
+		index += 1
+		if index > 100:
+			break
+	'''
+
+	exports.win_images(
+		"ttt_wins_p2_3x3",
+		win_configurations,
+		size,
+		player_count,
+	)
+
+	return
+
+def input_reverse_image() -> None:
+	"""
+	Input loop to convert input `code` to a board.
+	"""
+	print("## Reverse image.\n")
+	player_count: int = 2
+	size: tuple[int, int] = (3, 3)
+	print(f"""With:
+- player_count={player_count};
+- size={size}.
+""")
+	try: 
+		while True:
+			code: str = input("\ncode: ")
+			print(ui.format_board(configurations.reverse_image(
+				int(code),
+				player_count + 1,
+				size[0] * size[1],
+			), size))
+	except KeyboardInterrupt as interrupt:
+		print(f"\nInterrupted by CTRL+C. Details: \n```\n{interrupt}\n```\n")
 
 	return
 
@@ -146,10 +200,15 @@ def main() -> None:
 
 	test_next_configuration1()
 
-	test_generate_board_graph1()
+	#test_generate_board_graph1()
 
-	# test_generate_board_graph2()
+	#test_generate_board_graph2()
 
+	#test_win_conditions1()
+
+	input_reverse_image()
+
+	print("\n(?) End.")
 	return
 
 main()

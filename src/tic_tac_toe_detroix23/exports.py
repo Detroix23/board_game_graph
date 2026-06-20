@@ -6,7 +6,7 @@ import json
 
 import numpy 
 
-from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH
+from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH, PATH_WINS
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, o: object) -> object:
@@ -18,7 +18,7 @@ class NumpyArrayEncoder(json.JSONEncoder):
         
         return encoded
 
-def export_play_graph(
+def play_graph(
     name: str,
     graph: Graph,
     size: tuple[int, int],
@@ -50,8 +50,39 @@ def export_play_graph(
                 indent=2,
             )
     except FileNotFoundError as file_not_found:
-        print("(!) plays.export_play_graph() File not found:")
+        print("(!) exports.play_graph() File not found:")
         print(f"```\n{file_not_found}\n```\n")
 
     return
 
+def win_images(
+    name: str,
+    images: set[int],
+    size: tuple[int, int],
+    player_count: int, 
+) -> None:
+    image_list: list[int] = list(images)
+    image_list.sort()
+
+    data: dict[str, object] = {
+        "size": {
+            "x": size[0],
+            "y": size[1], 
+        },
+        "player_count": player_count,
+        "image_count": len(image_list),
+        "images": image_list,
+    }
+
+    try:
+        with open(PATH_WINS / f"{name.strip()}.json", "w") as json_file:
+            json.dump(
+                data, 
+                json_file, 
+                indent=2,
+            )
+    except FileNotFoundError as file_not_found:
+        print("(!) exports.win_images() File not found:")
+        print(f"```\n{file_not_found}\n```\n")
+
+    return

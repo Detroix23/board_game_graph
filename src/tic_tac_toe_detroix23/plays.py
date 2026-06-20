@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy
 
-from tic_tac_toe_detroix23.definitions import Board, BoardsNext, Graph
+from tic_tac_toe_detroix23.definitions import Board, BoardList, Graph
 from tic_tac_toe_detroix23 import configurations
 
 def next_player(player: int, player_count: int) -> int:
@@ -47,7 +47,7 @@ def generate_plays_graph(
         else {}
     )
 
-    next_boards: Optional[BoardsNext] = next_board(board, size, player)
+    next_boards: Optional[BoardList] = next_board(board, size, player)
     
     if next_boards is not None:
         graph_update[configurations.image(board, player_count + 1)] = numpy.array([
@@ -72,7 +72,7 @@ def next_board(
     board: Board,
     size: tuple[int, int],
     player: int,
-) -> Optional[BoardsNext]:
+) -> Optional[BoardList]:
     """
     Returns all possible `Configuration` after the turn of `player`. 
     """

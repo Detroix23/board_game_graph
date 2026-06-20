@@ -11,13 +11,24 @@ import numpy
 
 Player = numpy.uint8
 
-Board = numpy.typing.NDArray[Player]
+Board = numpy.ndarray[tuple[int], numpy.dtype[Player]]
 
-BoardsNext = numpy.ndarray[tuple[int, int], numpy.dtype[Player]]
+BoardList = numpy.ndarray[tuple[int, int], numpy.dtype[Player]]
 
-GraphBoard = dict[Board, BoardsNext]
+ImageList = numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]
+
+GraphBoard = dict[Board, BoardList]
 
 Graph = dict[int, numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]]
 
 
-PATH_GRAPH: Final[pathlib.Path] = pathlib.Path("./data")
+PATH_GRAPH: Final[pathlib.Path] = pathlib.Path("./data/graphs")
+
+PATH_WINS: Final[pathlib.Path] = pathlib.Path("./data/wins")
+
+DIRECTIONS: Final[list[tuple[int, int]]] = [
+    (1, 0),
+    (1, 1),
+    (0, 1),
+    (-1, 1),
+]
