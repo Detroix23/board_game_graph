@@ -32,3 +32,7 @@ DIRECTIONS: Final[list[tuple[int, int]]] = [
     (0, 1),
     (-1, 1),
 ]
+
+PLAYER_SYMBOLS: Final[list[str]] = [" ", "X", "O", "Δ", "┼", "Z"]
+
+PLAYER_COLORS: Final[list[str]] = []

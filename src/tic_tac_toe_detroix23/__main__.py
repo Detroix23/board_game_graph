@@ -93,45 +93,94 @@ def test_next_configuration1() -> None:
 	return
 
 def test_generate_board_graph1() -> None:
+	"""
+	Depth = -1.
+	"""
 	print("\n## Test: generate_board_graph 1.")
 
 	size: tuple[int, int] = (3, 3)
+	win_length: int = 3
 	player_count: int = 2
-	graph1: Graph = plays.generate_plays_graph(
-		configurations.empty(size),
+	player_start: int = 1
+	board_start = configurations.empty(size)
+
+	win_conditions = conditions.WinConditions(
 		size,
-		1,
 		player_count,
-		2,
+		win_length,
+	)
+	win_conditions.generate()
+
+	graph: Graph = plays.generate_graph(
+		board_start,
+		size,
+		player_start,
+		player_count,
+		win_conditions,
+		depth=-1,
 	)
 
-	print(ui.format_graph(graph1), end="\n\n")
-
-	print(ui.format_board(configurations.reverse_image(0, player_count + 1, size[0] * size[1]), size))
-	print(ui.format_board(configurations.reverse_image(1, player_count + 1, size[0] * size[1]), size))
-	print(ui.format_board(configurations.reverse_image(6561, player_count + 1, size[0] * size[1]), size))
-	print(ui.format_board(configurations.reverse_image(13123, player_count + 1, size[0] * size[1]), size))
-
-	#exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)
-	graphing.draw("graph0_3x3_d2", graph1)
+	print(f"Graph node count: q={len(graph)}")
+	
+	exports.play_graph("ttt_0_3x3", graph, size, 1, player_count, 2)
+	graphing.draw(
+		"graph0_3x3", 
+		graph,
+		configurations.image(board_start, player_count + 1),
+		player_start,
+		player_count,
+		win_conditions,
+	)
 
 	return
 
+
 def test_generate_board_graph2() -> None:
+	"""
+	Depth = 3.
+	"""
 	print("\n## Test: generate_board_graph 2.")
 
 	size: tuple[int, int] = (3, 3)
+	win_length: int = 3
 	player_count: int = 2
-	graph1: Graph = plays.generate_plays_graph(
-		configurations.empty(size),
+	player_start: int = 1
+	depth: int = 3
+	board_start = numpy.array([
+		0, 0, 0,
+		0, 0, 0,
+		0, 2, 2,
+	])
+
+	win_conditions = conditions.WinConditions(
 		size,
-		1,
 		player_count,
+		win_length,
+	)
+	win_conditions.generate()
+
+	graph: Graph = plays.generate_graph(
+		#configurations.empty(size),
+		board_start,
+		size,
+		player_start,
+		player_count,
+		win_conditions,
+		depth=depth,
 	)
 
-	print(len(graph1))
-	exports.play_graph("ttt_0_3x3", graph1, size, 1, player_count, 2)
-	graphing.draw("graph0_3x3", graph1)
+	print(f"Graph dictionary: \n{ui.format_graph(graph)}", end="\n\n")
+
+	# Exporting and drawing.
+	#exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)
+	graphing.draw(
+		f"graph0_{size[0]}x{size[1]}_d{depth}", 
+		graph,
+		configurations.image(board_start, player_count + 1),
+		player_start,
+		player_count,
+		win_conditions,
+	)
 
 	return
 
@@ -147,7 +196,7 @@ def test_win_conditions1() -> None:
 
 	win_configurations: set[int] = win_generator.generate()
 
-	print(f"w (l={len(win_configurations)}): {win_configurations}")
+	print(f"win_configurations (l={len(win_configurations)}): {win_configurations}")
 	
 	exports.win_images(
 		"ttt_wins_p2_3x3",
@@ -192,7 +241,7 @@ def main() -> None:
 
 	test_next_configuration1()
 
-	#test_generate_board_graph1()
+	test_generate_board_graph1()
 
 	#test_generate_board_graph2()
 

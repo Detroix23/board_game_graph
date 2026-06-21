@@ -2,6 +2,7 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/conditions.py
 """
+import time
 from typing import Optional
 
 from tic_tac_toe_detroix23.definitions import Board, DIRECTIONS
@@ -34,13 +35,13 @@ class WinConditions:
         self._win_images = None
 
         return
-    
+
     def get_win_images(self) -> Optional[set[int]]:
         """
         Returns the read-only attributes `_win_image`.
         """
         return self._win_images
-
+    
     def tile_wining_schemas(
         self,
         x: int,
@@ -131,6 +132,9 @@ class WinConditions:
         Precompute all wining board in a `BoardList`,
         where winning is lining `win_length`.
         """
+        print("(?) conditions.WinConditions.generate() Start...")
+        time_start: float = time.perf_counter()
+
         # Generate schemas:
         # - all wining positions for all player [1; `player_count`];
         # - all non wining tiles are `0`.
@@ -157,6 +161,7 @@ class WinConditions:
                 fill=0,
             )
         
+        print(f"(?) conditions.WinConditions.generate() End in {time.perf_counter() - time_start}s.")
         self._win_images = images
         return self._win_images
 
