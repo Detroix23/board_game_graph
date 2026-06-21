@@ -1,0 +1,377 @@
+// Tic-Tac-Toe play-graph. Start=8
+strict digraph manual8_3x3_d3 {
+	graph [bgcolor=white overlap=false splines=true]
+	node [arrowhead=diamond color=black fillcolor=white fixedsize=true shape=circle style=filled width=0.69]
+	8 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13130 [fillcolor="0.500 0.900 0.900" shape=circle]
+	4382 [fillcolor="0.500 0.900 0.900" shape=circle]
+	1466 [fillcolor="0.500 0.900 0.900" shape=circle]
+	494 [fillcolor="0.500 0.900 0.900" shape=circle]
+	170 [fillcolor="0.500 0.900 0.900" shape=circle]
+	62 [fillcolor="0.500 0.900 0.900" shape=circle]
+	26 [fillcolor="0.500 0.900 0.900" shape=box]
+	15317 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13859 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13373 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13211 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13157 [fillcolor="0.000 0.900 0.900" shape=circle]
+	13139 [fillcolor="0.000 0.900 0.900" shape=circle]
+	10943 [fillcolor="0.000 0.900 0.900" shape=circle]
+	5111 [fillcolor="0.000 0.900 0.900" shape=circle]
+	4625 [fillcolor="0.000 0.900 0.900" shape=circle]
+	4463 [fillcolor="0.000 0.900 0.900" shape=circle]
+	4409 [fillcolor="0.000 0.900 0.900" shape=circle]
+	4391 [fillcolor="0.000 0.900 0.900" shape=circle]
+	8027 [fillcolor="0.000 0.900 0.900" shape=circle]
+	3653 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1709 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1547 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1493 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1475 [fillcolor="0.000 0.900 0.900" shape=circle]
+	7055 [fillcolor="0.000 0.900 0.900" shape=circle]
+	2681 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1223 [fillcolor="0.000 0.900 0.900" shape=circle]
+	575 [fillcolor="0.000 0.900 0.900" shape=circle]
+	521 [fillcolor="0.000 0.900 0.900" shape=circle]
+	503 [fillcolor="0.000 0.900 0.900" shape=circle]
+	6731 [fillcolor="0.000 0.900 0.900" shape=circle]
+	2357 [fillcolor="0.000 0.900 0.900" shape=circle]
+	899 [fillcolor="0.000 0.900 0.900" shape=circle]
+	413 [fillcolor="0.000 0.900 0.900" shape=circle]
+	197 [fillcolor="0.000 0.900 0.900" shape=circle]
+	179 [fillcolor="0.000 0.900 0.900" shape=circle]
+	6623 [fillcolor="0.000 0.900 0.900" shape=circle]
+	2249 [fillcolor="0.000 0.900 0.900" shape=circle]
+	791 [fillcolor="0.000 0.900 0.900" shape=circle]
+	305 [fillcolor="0.000 0.900 0.900" shape=circle]
+	143 [fillcolor="0.000 0.900 0.900" shape=circle]
+	71 [fillcolor="0.000 0.900 0.900" shape=circle]
+	16775 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15803 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15479 [fillcolor="0.500 0.900 0.900" shape=box]
+	15371 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15335 [fillcolor="0.500 0.900 0.900" shape=box]
+	18233 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14345 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14021 [fillcolor="0.500 0.900 0.900" shape=box]
+	13913 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13877 [fillcolor="0.500 0.900 0.900" shape=box]
+	17747 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14831 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13535 [fillcolor="0.500 0.900 0.900" shape=box]
+	13427 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13391 [fillcolor="0.500 0.900 0.900" shape=box]
+	17585 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14669 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13697 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13265 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13229 [fillcolor="0.500 0.900 0.900" shape=box]
+	17531 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14615 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13643 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13319 [fillcolor="0.500 0.900 0.900" shape=box]
+	13175 [fillcolor="0.500 0.900 0.900" shape=box]
+	17513 [fillcolor="0.500 0.900 0.900" shape=egg]
+	14597 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13625 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13301 [fillcolor="0.500 0.900 0.900" shape=box]
+	13193 [fillcolor="0.500 0.900 0.900" shape=egg]
+	12401 [fillcolor="0.500 0.900 0.900" shape=egg]
+	11429 [fillcolor="0.500 0.900 0.900" shape=egg]
+	11105 [fillcolor="0.500 0.900 0.900" shape=box]
+	10997 [fillcolor="0.500 0.900 0.900" shape=egg]
+	10961 [fillcolor="0.500 0.900 0.900" shape=box]
+	5597 [fillcolor="0.500 0.900 0.900" shape=egg]
+	5273 [fillcolor="0.500 0.900 0.900" shape=box]
+	5165 [fillcolor="0.500 0.900 0.900" shape=egg]
+	5129 [fillcolor="0.500 0.900 0.900" shape=box]
+	6083 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4787 [fillcolor="0.500 0.900 0.900" shape=box]
+	4679 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4643 [fillcolor="0.500 0.900 0.900" shape=box]
+	5921 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4949 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4517 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4481 [fillcolor="0.500 0.900 0.900" shape=box]
+	5867 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4895 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4571 [fillcolor="0.500 0.900 0.900" shape=box]
+	4427 [fillcolor="0.500 0.900 0.900" shape=box]
+	5849 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4877 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4553 [fillcolor="0.500 0.900 0.900" shape=box]
+	4445 [fillcolor="0.500 0.900 0.900" shape=egg]
+	8513 [fillcolor="0.500 0.900 0.900" shape=egg]
+	8189 [fillcolor="0.500 0.900 0.900" shape=egg]
+	8081 [fillcolor="0.500 0.900 0.900" shape=box]
+	8045 [fillcolor="0.500 0.900 0.900" shape=box]
+	4139 [fillcolor="0.500 0.900 0.900" shape=egg]
+	3815 [fillcolor="0.500 0.900 0.900" shape=egg]
+	3707 [fillcolor="0.500 0.900 0.900" shape=box]
+	3671 [fillcolor="0.500 0.900 0.900" shape=box]
+	1871 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1763 [fillcolor="0.500 0.900 0.900" shape=box]
+	1727 [fillcolor="0.500 0.900 0.900" shape=box]
+	2033 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1601 [fillcolor="0.500 0.900 0.900" shape=box]
+	1565 [fillcolor="0.500 0.900 0.900" shape=box]
+	1979 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1655 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1511 [fillcolor="0.500 0.900 0.900" shape=box]
+	1961 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1637 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1529 [fillcolor="0.500 0.900 0.900" shape=box]
+	7217 [fillcolor="0.500 0.900 0.900" shape=egg]
+	7109 [fillcolor="0.500 0.900 0.900" shape=egg]
+	7073 [fillcolor="0.500 0.900 0.900" shape=box]
+	2843 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2735 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2699 [fillcolor="0.500 0.900 0.900" shape=box]
+	1385 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1277 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1241 [fillcolor="0.500 0.900 0.900" shape=box]
+	629 [fillcolor="0.500 0.900 0.900" shape=egg]
+	593 [fillcolor="0.500 0.900 0.900" shape=box]
+	683 [fillcolor="0.500 0.900 0.900" shape=egg]
+	539 [fillcolor="0.500 0.900 0.900" shape=box]
+	665 [fillcolor="0.500 0.900 0.900" shape=egg]
+	557 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6785 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6749 [fillcolor="0.500 0.900 0.900" shape=box]
+	2411 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2375 [fillcolor="0.500 0.900 0.900" shape=box]
+	953 [fillcolor="0.500 0.900 0.900" shape=egg]
+	917 [fillcolor="0.500 0.900 0.900" shape=box]
+	467 [fillcolor="0.500 0.900 0.900" shape=egg]
+	431 [fillcolor="0.500 0.900 0.900" shape=box]
+	215 [fillcolor="0.500 0.900 0.900" shape=box]
+	233 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6641 [fillcolor="0.500 0.900 0.900" shape=box]
+	2267 [fillcolor="0.500 0.900 0.900" shape=box]
+	809 [fillcolor="0.500 0.900 0.900" shape=box]
+	323 [fillcolor="0.500 0.900 0.900" shape=box]
+	161 [fillcolor="0.500 0.900 0.900" shape=box]
+	8 -> 13130
+	8 -> 4382
+	8 -> 1466
+	8 -> 494
+	8 -> 170
+	8 -> 62
+	8 -> 26
+	13130 -> 15317
+	13130 -> 13859
+	13130 -> 13373
+	13130 -> 13211
+	13130 -> 13157
+	13130 -> 13139
+	15317 -> 16775
+	15317 -> 15803
+	15317 -> 15479
+	15317 -> 15371
+	15317 -> 15335
+	13859 -> 18233
+	13859 -> 14345
+	13859 -> 14021
+	13859 -> 13913
+	13859 -> 13877
+	13373 -> 17747
+	13373 -> 14831
+	13373 -> 13535
+	13373 -> 13427
+	13373 -> 13391
+	13211 -> 17585
+	13211 -> 14669
+	13211 -> 13697
+	13211 -> 13265
+	13211 -> 13229
+	13157 -> 17531
+	13157 -> 14615
+	13157 -> 13643
+	13157 -> 13319
+	13157 -> 13175
+	13139 -> 17513
+	13139 -> 14597
+	13139 -> 13625
+	13139 -> 13301
+	13139 -> 13193
+	4382 -> 10943
+	4382 -> 5111
+	4382 -> 4625
+	4382 -> 4463
+	4382 -> 4409
+	4382 -> 4391
+	10943 -> 12401
+	10943 -> 11429
+	10943 -> 11105
+	10943 -> 10997
+	10943 -> 10961
+	5111 -> 18233
+	5111 -> 5597
+	5111 -> 5273
+	5111 -> 5165
+	5111 -> 5129
+	4625 -> 17747
+	4625 -> 6083
+	4625 -> 4787
+	4625 -> 4679
+	4625 -> 4643
+	4463 -> 17585
+	4463 -> 5921
+	4463 -> 4949
+	4463 -> 4517
+	4463 -> 4481
+	4409 -> 17531
+	4409 -> 5867
+	4409 -> 4895
+	4409 -> 4571
+	4409 -> 4427
+	4391 -> 17513
+	4391 -> 5849
+	4391 -> 4877
+	4391 -> 4553
+	4391 -> 4445
+	1466 -> 8027
+	1466 -> 3653
+	1466 -> 1709
+	1466 -> 1547
+	1466 -> 1493
+	1466 -> 1475
+	8027 -> 12401
+	8027 -> 8513
+	8027 -> 8189
+	8027 -> 8081
+	8027 -> 8045
+	3653 -> 16775
+	3653 -> 4139
+	3653 -> 3815
+	3653 -> 3707
+	3653 -> 3671
+	1709 -> 14831
+	1709 -> 6083
+	1709 -> 1871
+	1709 -> 1763
+	1709 -> 1727
+	1547 -> 14669
+	1547 -> 5921
+	1547 -> 2033
+	1547 -> 1601
+	1547 -> 1565
+	1493 -> 14615
+	1493 -> 5867
+	1493 -> 1979
+	1493 -> 1655
+	1493 -> 1511
+	1475 -> 14597
+	1475 -> 5849
+	1475 -> 1961
+	1475 -> 1637
+	1475 -> 1529
+	494 -> 7055
+	494 -> 2681
+	494 -> 1223
+	494 -> 575
+	494 -> 521
+	494 -> 503
+	7055 -> 11429
+	7055 -> 8513
+	7055 -> 7217
+	7055 -> 7109
+	7055 -> 7073
+	2681 -> 15803
+	2681 -> 4139
+	2681 -> 2843
+	2681 -> 2735
+	2681 -> 2699
+	1223 -> 14345
+	1223 -> 5597
+	1223 -> 1385
+	1223 -> 1277
+	1223 -> 1241
+	575 -> 13697
+	575 -> 4949
+	575 -> 2033
+	575 -> 629
+	575 -> 593
+	521 -> 13643
+	521 -> 4895
+	521 -> 1979
+	521 -> 683
+	521 -> 539
+	503 -> 13625
+	503 -> 4877
+	503 -> 1961
+	503 -> 665
+	503 -> 557
+	170 -> 6731
+	170 -> 2357
+	170 -> 899
+	170 -> 413
+	170 -> 197
+	170 -> 179
+	6731 -> 11105
+	6731 -> 8189
+	6731 -> 7217
+	6731 -> 6785
+	6731 -> 6749
+	2357 -> 15479
+	2357 -> 3815
+	2357 -> 2843
+	2357 -> 2411
+	2357 -> 2375
+	899 -> 14021
+	899 -> 5273
+	899 -> 1385
+	899 -> 953
+	899 -> 917
+	413 -> 13535
+	413 -> 4787
+	413 -> 1871
+	413 -> 467
+	413 -> 431
+	197 -> 13319
+	197 -> 4571
+	197 -> 1655
+	197 -> 683
+	197 -> 215
+	179 -> 13301
+	179 -> 4553
+	179 -> 1637
+	179 -> 665
+	179 -> 233
+	62 -> 6623
+	62 -> 2249
+	62 -> 791
+	62 -> 305
+	62 -> 143
+	62 -> 71
+	6623 -> 10997
+	6623 -> 8081
+	6623 -> 7109
+	6623 -> 6785
+	6623 -> 6641
+	2249 -> 15371
+	2249 -> 3707
+	2249 -> 2735
+	2249 -> 2411
+	2249 -> 2267
+	791 -> 13913
+	791 -> 5165
+	791 -> 1277
+	791 -> 953
+	791 -> 809
+	305 -> 13427
+	305 -> 4679
+	305 -> 1763
+	305 -> 467
+	305 -> 323
+	143 -> 13265
+	143 -> 4517
+	143 -> 1601
+	143 -> 629
+	143 -> 161
+	71 -> 13193
+	71 -> 4445
+	71 -> 1529
+	71 -> 557
+	71 -> 233
+}

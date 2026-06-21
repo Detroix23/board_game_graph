@@ -2,9 +2,9 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/cli.py
 """
-from typing import Final
+from typing import Final, TypeVar, Type
 
-from tic_tac_toe_detroix23.definitions import Graph, FileFormat, LayoutEngine
+from tic_tac_toe_detroix23.definitions import Board, Graph, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import (
     configurations, plays, conditions, graphs, ui, exports, graphing
 )
@@ -37,6 +37,32 @@ CLI arguments:
 
 """
 
+_T_INPUT = TypeVar("_T_INPUT")
+
+def get_input(
+    input_type: Type[_T_INPUT],
+    message: str,
+    default: _T_INPUT,
+) -> _T_INPUT:
+    """
+    Get user input and returns converted to `_T_INPUT`.
+    """
+    user_input: str = input(f"{message} [{input_type.__name__}]({default}): ")
+    output: _T_INPUT
+
+    if not user_input:
+        output = default
+    
+    else:
+        try:
+            output = input_type(user_input)  # pyright: ignore[reportCallIssue]
+        
+        except TypeError:
+            output = default
+    
+    print(f"=> `{output}`")
+    return output
+
 def reverse_image() -> None:
     """
     Input loop to convert input `code` to a board.
@@ -67,38 +93,35 @@ def draw_graph() -> None:
     Input loop to create a graph from an interactive CLI.
     """
     print("## Custom graph.\n")
-    
-    player_count: int = 2
-    player_start: int = 2
-    size: tuple[int, int] = (3, 3)
-    win_length: int = 3
-    file_format: FileFormat = FileFormat.SVG
-    layout_engine: LayoutEngine = LayoutEngine.NEATO
 
-    print(f"""With:
-- player_count={player_count};
-- player_start={player_start};
-- size={size};
-- win_length={win_length};
-- file_format={file_format};
-- layout_engine={layout_engine};
-""")
+    try:    
+        player_count: int = get_input(int, "Player count", 2)
+        player_start: int = get_input(int, "Starting player", 2)
+        size: tuple[int, int] = (
+            get_input(int, "Size X of the board", 3),
+            get_input(int, "Size Y of the board", 3),
+        )
+        win_length: int = get_input(int, "Aligned length to win", 3)
+        file_format: FileFormat = FileFormat.SVG
+        layout_engine: LayoutEngine = LayoutEngine.NEATO
 
-    try: 
+        print(f"""Global parameters:
+  - player_count={player_count};
+  - player_start={player_start};
+  - size={size};
+  - win_length={win_length};
+  - file_format={file_format};
+  - layout_engine={layout_engine};
+    """)
+
         while True:
-            node_start: int = int(input("\nNode code (`int`): "))
-            print(f"(?) node_start={node_start}")
-
-            input_depth: str = input("\nDepth (`int` | `-1`): ")
-            depth: int = (int(input_depth)
-                if input_depth
-                else -1
-            )
-            print(f"(?) depth={depth}")
+            print("\n### Graph settings [constraint](default).")
+            node_start: int = get_input(int, "Node code", 0)
+            depth: int = get_input(int, "Depth", -1)
 
             print("\n### Generation.")
 
-            board_start = configurations.reverse_image(
+            board_start: Board = configurations.reverse_image(
                 node_start,
                 player_count + 1,
                 size[0] * size[1],
@@ -162,7 +185,7 @@ def draw_graph() -> None:
                 2
             )
 
-            if depth != -1 and depth < 3:
+            if depth != -1 and depth <= 3:
                 graph_drawer = graphing.GraphDrawer(
                     name,  
                     graph,

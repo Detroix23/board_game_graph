@@ -110,7 +110,11 @@ def indexing(
 
             for neighbor in graph.get(state.node, []):
                 if neighbor not in visited:
-                    player: int = plays.turn_player(state.depth, player_start, player_count)
+                    player: int = plays.turn_player(
+                        state.depth + 1, 
+                        player_start, 
+                        player_count,
+                    )
                     
                     queue.append(NodeState(
                         int(neighbor), 
