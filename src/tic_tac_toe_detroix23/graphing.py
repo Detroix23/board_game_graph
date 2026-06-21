@@ -67,7 +67,7 @@ class GraphDrawer:
     """
     name: str
     graph: Graph
-    graph_index: list[graphs.NodeState]
+    graph_index: dict[int, graphs.NodeState]
     node_start: int
     player_start: int
     player_count: int
@@ -81,7 +81,7 @@ class GraphDrawer:
         self,
         name: str, 
         graph: Graph,
-        graph_index: list[graphs.NodeState],
+        graph_index: dict[int, graphs.NodeState],
         node_start: int,
         player_start: int,
         player_count: int,
@@ -182,9 +182,9 @@ class GraphDrawer:
         time_start: float = time.perf_counter()
 
         # Breadth-first explore.
-        for node_state in self.graph_index:
+        for node_state in self.graph_index.values():
             self.add_node(node_state)
-
+        
         # Linking.
         for node, neighbors in self.graph.items():
             for neighbor in neighbors:

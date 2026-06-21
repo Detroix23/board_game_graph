@@ -1,0 +1,16 @@
+// Tic-Tac-Toe play-graph. Start=166
+strict digraph graph166_3x3_d2 {
+	graph [bgcolor=white overlap=false splines=true]
+	node [arrowhead=diamond color=black fillcolor=white fixedsize=true shape=circle style=filled width=0.69]
+	1624 [fillcolor="0.500 0.900 0.900" shape=circle]
+	8185 [fillcolor="0.000 0.900 0.900" shape=egg]
+	3811 [fillcolor="0.000 0.900 0.900" shape=egg]
+	1867 [fillcolor="0.000 0.900 0.900" shape=egg]
+	1651 [fillcolor="0.000 0.900 0.900" shape=egg]
+	1633 [fillcolor="0.000 0.900 0.900" shape=box]
+	1624 -> 8185
+	1624 -> 3811
+	1624 -> 1867
+	1624 -> 1651
+	1624 -> 1633
+}

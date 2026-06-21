@@ -4,9 +4,13 @@
 
 Graph logic.
 """
+import numpy
+
 from tic_tac_toe_detroix23.definitions import Graph
 from tic_tac_toe_detroix23.conditions import WinConditions
 from tic_tac_toe_detroix23 import plays
+
+GraphIndex = dict[int, 'NodeState']
 
 class NodeState:
     """
@@ -76,9 +80,9 @@ def indexing(
     player_count: int,
     win_conditions: WinConditions,
     depth_start: int = 0,
-) -> list[NodeState]:
+) -> GraphIndex:
     """
-    Use a breadth-first search, to return a `list` of `NodeState`:
+    Use a breadth-first search, to return a `dict` of `node`: `NodeState`:
     - node: `int`;
     - depth: `int`;
     - win_state: `int`. 
@@ -96,13 +100,13 @@ def indexing(
         depth_start, 
         node_start_win_state
     )]
-    depths: list[NodeState] = []
+    index: dict[int, NodeState] = dict()
 
     while queue:
         state: NodeState = queue.pop(0)
         if state.node not in visited:
             visited.add(state.node)
-            depths.append(NodeState(
+            index[state.node] = (NodeState(
                 state.node, 
                 state.depth,
                 state.win_state
@@ -127,4 +131,54 @@ def indexing(
                         )
                     ))
 
-    return depths
+    return index
+
+def outcomes(
+    graph_index: dict[int, NodeState],
+    player_count: int,
+) -> dict[int, int]:
+    """
+    Count all outcomes, `win_states`, of the `graph`.
+    """
+    counter: dict[int, int] = {
+        index: 0 for index in range(-1, player_count + 1)
+    }
+
+    for node_state in graph_index.values():
+        counter[node_state.win_state] += 1
+
+    return counter
+
+def sub_graph(
+    source: Graph,
+    source_index: GraphIndex,
+    node: int,
+) -> tuple[Graph, GraphIndex]:
+    """
+    Individuates the sub-graph from `node` of `source`.
+
+    Returns a couple:
+    - 0: the new sub-graph;
+    - 1: sub-graph's index.
+    """
+    visited: set[int] = set()
+    queue: list[int] = [node]
+    sub_graph: Graph = dict()
+    sub_index: GraphIndex = dict()
+
+    while queue:
+        node = queue.pop(0)
+        if node not in visited:
+            visited.add(node)
+            # Copying.
+            sub_graph[node] = source.get(
+                node, 
+                numpy.empty((0,), dtype=numpy.uint32
+            ))
+            sub_index[node] = source_index[node]
+
+            for neighbor in source.get(node, []):
+                if neighbor not in visited:
+                    queue.append(int(neighbor))
+
+    return (sub_graph, sub_index)

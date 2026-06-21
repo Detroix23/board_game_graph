@@ -143,14 +143,10 @@ def generate_board_graph1() -> None:
     )
 
     ## Collecting end states:
-    end_states: dict[int, int] = {
-        -1: 0,
-        0: 0,
-        1: 0,
-        2: 0,
-    }
-    for node_state in graph_index:
-        end_states[node_state.win_state] += 1
+    end_states: dict[int, int] = graphs.outcomes(
+        graph_index,
+        player_count,
+    )
 
     print("End states: ")
     pprint.pprint(end_states)
@@ -183,7 +179,7 @@ def generate_board_graph2() -> None:
     win_length: int = 3
     player_count: int = 2
     player_start: int = 1
-    depth: int = 3
+    depth: int = 2
     board_start = numpy.array([
         0, 0, 0,
         0, 2, 0,
@@ -207,10 +203,6 @@ def generate_board_graph2() -> None:
         win_conditions,
         depth=depth,
     )
-
-    print(f"Graph dictionary: \n{ui.format_graph(graph)}", end="\n\n")
-
-    # Data analysis.
     graph_index = graphs.indexing(
         graph,
         node_start,
@@ -219,6 +211,28 @@ def generate_board_graph2() -> None:
         win_conditions,
         depth_start=0,
     )
+    
+    graph, graph_index = graphs.sub_graph(
+        graph,
+        graph_index,
+        1624,
+    )
+    
+    
+    print(f"Graph dictionary: \n{ui.format_graph(graph)}", end="\n\n")
+
+    # Data analysis.
+    print(f"Graph node count: q={len(graph)}")
+        
+    
+
+    end_states: dict[int, int] = graphs.outcomes(
+        graph_index,
+        player_count,
+    )
+
+    print("End states: ")
+    pprint.pprint(end_states)
 
     # Exporting and drawing.
     #exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)

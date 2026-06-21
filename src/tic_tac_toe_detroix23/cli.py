@@ -158,15 +158,11 @@ def draw_graph() -> None:
             )
 
             ## Collecting end states:
-            end_states: dict[int, int] = {
-                -1: 0,
-                0: 0,
-                1: 0,
-                2: 0,
-            }
-            for node_state in graph_index:
-                end_states[node_state.win_state] += 1
-
+            end_states: dict[int, int] = graphs.outcomes(
+                graph_index,
+                player_count,
+            )
+            
             print("End states: ")
             for win_state, count in end_states.items():
                 print(f"  {win_state}: {count};")
