@@ -170,7 +170,7 @@ def generate_board_graph1() -> None:
             win_conditions,
         )
         graph_drawer.draw()
-
+    
     return
 
 def generate_board_graph2() -> None:

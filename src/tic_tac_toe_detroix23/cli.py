@@ -4,7 +4,10 @@
 """
 from typing import Final
 
-from tic_tac_toe_detroix23 import configurations, ui
+from tic_tac_toe_detroix23.definitions import Graph, FileFormat, LayoutEngine
+from tic_tac_toe_detroix23 import (
+    configurations, plays, conditions, graphs, ui, exports, graphing
+)
 
 HELP: Final[str] = """
 ## Help.
@@ -29,6 +32,9 @@ CLI arguments:
 - "r", "reverse":
     cli.reverse_image()
 
+- "g", "graph":
+    cli.draw_graph()
+
 """
 
 def reverse_image() -> None:
@@ -50,8 +56,127 @@ def reverse_image() -> None:
                 player_count + 1,
                 size[0] * size[1],
             ), size))
+
     except KeyboardInterrupt as interrupt:
         print(f"\nInterrupted by CTRL+C. Details: \n```\n{interrupt}\n```\n")
 
     return
 
+def draw_graph() -> None:
+    """
+    Input loop to create a graph from an interactive CLI.
+    """
+    print("## Custom graph.\n")
+    
+    player_count: int = 2
+    player_start: int = 2
+    size: tuple[int, int] = (3, 3)
+    win_length: int = 3
+    file_format: FileFormat = FileFormat.SVG
+    layout_engine: LayoutEngine = LayoutEngine.NEATO
+
+    print(f"""With:
+- player_count={player_count};
+- player_start={player_start};
+- size={size};
+- win_length={win_length};
+- file_format={file_format};
+- layout_engine={layout_engine};
+""")
+
+    try: 
+        while True:
+            node_start: int = int(input("\nNode code (`int`): "))
+            print(f"(?) node_start={node_start}")
+
+            input_depth: str = input("\nDepth (`int` | `-1`): ")
+            depth: int = (int(input_depth)
+                if input_depth
+                else -1
+            )
+            print(f"(?) depth={depth}")
+
+            print("\n### Generation.")
+
+            board_start = configurations.reverse_image(
+                node_start,
+                player_count + 1,
+                size[0] * size[1],
+            )
+
+            win_conditions = conditions.WinConditions(
+                size,
+                player_count,
+                win_length,
+            )
+            win_conditions.generate()
+
+            graph: Graph = plays.generate_graph(
+                board_start,
+                size,
+                player_start,
+                player_count,
+                win_conditions,
+                depth,
+            )
+
+            # Data analysis.
+            print("\n### Data analysis:")
+
+            print(f"Graph node count: \n  q={len(graph)}")
+
+            graph_index = graphs.indexing(
+                graph,
+                node_start,
+                player_start,
+                player_count,
+                win_conditions,
+                depth_start=0,
+            )
+
+            ## Collecting end states:
+            end_states: dict[int, int] = {
+                -1: 0,
+                0: 0,
+                1: 0,
+                2: 0,
+            }
+            for node_state in graph_index:
+                end_states[node_state.win_state] += 1
+
+            print("End states: ")
+            for win_state, count in end_states.items():
+                print(f"  {win_state}: {count};")
+
+            # Exporting and graphing.
+            print("\n### Outputs.")
+            name: str = f"manual{node_start}_{size[0]}x{size[1]}_d{depth}"
+            
+            
+            exports.play_graph(
+                f"ttt_{name}", 
+                graph, 
+                size, 
+                1, 
+                player_count,
+                2
+            )
+
+            if depth != -1 and depth < 3:
+                graph_drawer = graphing.GraphDrawer(
+                    name,  
+                    graph,
+                    graph_index,
+                    configurations.image(board_start, player_count + 1),
+                    player_start,
+                    player_count,
+                    win_conditions,
+                    file_format,
+                    layout_engine,
+                )
+                graph_drawer.draw()
+
+    except KeyboardInterrupt as interrupt:
+        print(f"\nInterrupted by CTRL+C. Details: \n```\n{interrupt}\n```\n")
+
+    return

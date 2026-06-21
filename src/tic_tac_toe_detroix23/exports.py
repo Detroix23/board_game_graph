@@ -2,6 +2,7 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/exports.py
 """
+import time
 import json
 
 import numpy 
@@ -29,6 +30,9 @@ def play_graph(
     """
     Write the `graph` in JSON.
     """
+    print(f"(?) exports.play_graph(name={name}) Start...")
+    time_start: float = time.perf_counter()
+
     data: dict[str, object] = {
         "size": {
             "x": size[0],
@@ -53,6 +57,8 @@ def play_graph(
         print("(!) exports.play_graph() File not found:")
         print(f"```\n{file_not_found}\n```\n")
 
+    time_elapsed: float = time.perf_counter() - time_start
+    print(f"(?) exports.play_graph(name={name}) End in {time_elapsed:.2f}s.")
     return
 
 def win_images(

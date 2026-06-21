@@ -36,6 +36,9 @@ def argument_decider(arguments: list[str]) -> None:
     elif mode in {"r", "reverse"}:
         cli.reverse_image()
 
+    elif mode in {"g", "graph"}:
+        cli.draw_graph()
+        
     else:
         print(f"\n(!) Argument 1 `mode` unknown (`{mode}`).\n")
         print(cli.HELP)

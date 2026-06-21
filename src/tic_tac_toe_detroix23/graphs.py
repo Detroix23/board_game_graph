@@ -6,6 +6,7 @@ Graph logic.
 """
 from tic_tac_toe_detroix23.definitions import Graph
 from tic_tac_toe_detroix23.conditions import WinConditions
+from tic_tac_toe_detroix23 import plays
 
 class NodeState:
     """
@@ -109,13 +110,15 @@ def indexing(
 
             for neighbor in graph.get(state.node, []):
                 if neighbor not in visited:
+                    player: int = plays.turn_player(state.depth, player_start, player_count)
+                    
                     queue.append(NodeState(
                         int(neighbor), 
                         state.depth + 1,
                         set_win_state(
                             graph,
                             int(neighbor),
-                            ((state.depth + 1 + player_start) % player_count + 1),
+                            player,
                             win_conditions
                         )
                     ))

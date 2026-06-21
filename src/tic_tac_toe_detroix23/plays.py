@@ -10,11 +10,25 @@ import numpy
 from tic_tac_toe_detroix23.definitions import Board, BoardList, Graph
 from tic_tac_toe_detroix23 import configurations, conditions
 
-def next_player(player: int, player_count: int) -> int:
+def next_player(
+    player: int, 
+    player_count: int,
+    increment: int = 1,
+) -> int:
     """
     Cycle from the current `player` to next player.
     """
-    return player % player_count + 1
+    return (player - 1 + increment) % player_count + 1
+
+def turn_player(
+    turn: int,
+    player_start: int,
+    player_count: int
+) -> int:
+    """
+    Returns the player ID `int` that plays at the given `turn`. 
+    """
+    return (turn + 1 + player_start) % player_count + 1
 
 def next_board(
     board: Board,
@@ -99,7 +113,7 @@ def generate_graph(
     print(f"(?) plays.generate_graph(depth={depth}) End in {time_elapsed:.2f}s.")
     return generate_graph_body(
         board,
-        player,
+        next_player(player, player_count, -1),
         depth,
         {}
     )

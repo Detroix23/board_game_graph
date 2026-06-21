@@ -1,0 +1,23 @@
+{
+  "size": {
+    "x": 3,
+    "y": 3
+  },
+  "player_start": 1,
+  "player_count": 2,
+  "graph_depth": 2,
+  "graph_nodes": 1,
+  "graph": {
+    "0": [
+      6561,
+      2187,
+      729,
+      243,
+      81,
+      27,
+      9,
+      3,
+      1
+    ]
+  }
+}
