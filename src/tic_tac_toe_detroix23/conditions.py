@@ -161,7 +161,8 @@ class WinConditions:
                 fill=0,
             )
         
-        print(f"(?) conditions.WinConditions.generate() End in {time.perf_counter() - time_start}s.")
+        time_elapsed: float = time.perf_counter() - time_start
+        print(f"(?) conditions.WinConditions.generate() End in {time_elapsed:.2f}s.")
         self._win_images = images
         return self._win_images
 

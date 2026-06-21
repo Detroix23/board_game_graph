@@ -1,10 +1,15 @@
 {
     "cSpell.words": [
+        "CIRCO",
         "Graphviz",
-        "neato"
+        "neato",
+        "SFDP",
+        "TWOPI"
     ],
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.generateWithTypeAnnotation": true,
     "python.analysis.inlayHints.variableTypes": true,
-    "python.analysis.typeCheckingMode": "strict"
+    "python.analysis.typeCheckingMode": "strict",
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true
 }

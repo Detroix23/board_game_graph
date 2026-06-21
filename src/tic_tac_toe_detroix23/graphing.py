@@ -57,7 +57,8 @@ def draw_basic(
         view=True,
     ) 
 
-    print(f"(?) graphing.draw(name={name}) End in {time.perf_counter() - time_start}s.")
+    time_elapsed: float = time.perf_counter() - time_start
+    print(f"(?) graphing.draw(name={name}) End in {time_elapsed:.2f}s.")
     return dot
 
 class GraphDrawer:
@@ -66,6 +67,7 @@ class GraphDrawer:
     """
     name: str
     graph: Graph
+    graph_index: list[graphs.NodeState]
     node_start: int
     player_start: int
     player_count: int
@@ -79,6 +81,7 @@ class GraphDrawer:
         self,
         name: str, 
         graph: Graph,
+        graph_index: list[graphs.NodeState],
         node_start: int,
         player_start: int,
         player_count: int,
@@ -91,6 +94,7 @@ class GraphDrawer:
         """
         self.name = name
         self.graph = graph
+        self.graph_index = graph_index
         self.node_start = node_start
         self.player_start = player_start
         self.player_count = player_count
@@ -123,8 +127,7 @@ class GraphDrawer:
 
     def add_node(
         self,
-        node: int,
-        depth: int,
+        node_state: graphs.NodeState,
     ) -> None:
         """
         Node configuration to add to `dot`.
@@ -135,16 +138,19 @@ class GraphDrawer:
         - 'egg' is a leaf.
         """ 
         shape: str = "circle"
-        if self.win_conditions.is_win(node):
+        if node_state.win_state > 0:
             shape = "box"
-        elif len(self.graph.get(node, [])) == 0:
+        elif node_state.win_state == 0:
             shape = "egg"
 
         self.dot.node(  # pyright: ignore[reportUnknownMemberType]
-            str(node),
+            str(node_state.node),
             shape=shape,
             fillcolor=hsv(
-                ((depth + self.player_start - 1) % self.player_count) / self.player_count, 
+                (
+                    ((node_state.depth + self.player_start - 1) % self.player_count) 
+                    / self.player_count
+                ), 
                 0.9, 
                 0.9,
             ),
@@ -176,12 +182,8 @@ class GraphDrawer:
         time_start: float = time.perf_counter()
 
         # Breadth-first explore.
-        for node, depth in graphs.depth_indexing(
-            self.graph,
-            self.node_start,
-            depth_start=0,
-        ):
-            self.add_node(node, depth)
+        for node_state in self.graph_index:
+            self.add_node(node_state)
 
         # Linking.
         for node, neighbors in self.graph.items():
@@ -193,5 +195,6 @@ class GraphDrawer:
 
         self.render()
 
-        print(f"(?) graphing.draw(name={self.name}) End in {time.perf_counter() - time_start}s.")
+        time_elapsed: float = time.perf_counter() - time_start
+        print(f"(?) graphing.draw(name={self.name}) End in {time_elapsed:.2f}s.")
         return self.dot

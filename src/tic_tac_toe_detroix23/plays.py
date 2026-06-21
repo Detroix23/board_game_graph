@@ -49,7 +49,7 @@ def generate_graph(
     **Arguments**:
     - `board`: starting configuration;
     - `size`: 2D size of the `board`;
-    - `player`: starting player ID;
+    - `player`: starting player ID that just played `board`;
     - `player_count`: used to cycle turns;
     - `depth`: limit the recursion. `-1` to remove the limit;
     - `graph`: built graph, passed in the recursion.
@@ -95,7 +95,8 @@ def generate_graph(
 
         return graph
 
-    print(f"(?) plays.generate_graph(depth={depth}) End in {time.perf_counter() - time_start}s.")
+    time_elapsed: float = time.perf_counter() - time_start
+    print(f"(?) plays.generate_graph(depth={depth}) End in {time_elapsed:.2f}s.")
     return generate_graph_body(
         board,
         player,
