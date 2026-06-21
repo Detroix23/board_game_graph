@@ -1,4 +1,4 @@
-// Tic-Tac-Toe.
+// Tic-Tac-Toe play-graph. Start=0
 strict digraph graph0_3x3 {
 	graph [bgcolor=white overlap=false splines=true]
 	node [arrowhead=diamond color=black fillcolor=white fixedsize=true shape=circle style=filled width=0.69]

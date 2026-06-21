@@ -5,7 +5,7 @@
 import numpy
 
 from utilities.debug import assert_eq
-from tic_tac_toe_detroix23.definitions import Board, Graph
+from tic_tac_toe_detroix23.definitions import Board, Graph, LayoutEngine
 from tic_tac_toe_detroix23 import configurations, plays, conditions, ui, exports, graphing 
 
 def test_configurations1() -> None:
@@ -123,7 +123,7 @@ def test_generate_board_graph1() -> None:
 	print(f"Graph node count: q={len(graph)}")
 	
 	exports.play_graph("ttt_0_3x3", graph, size, 1, player_count, 2)
-	graphing.draw(
+	graph_drawer = graphing.GraphDrawer(
 		"graph0_3x3", 
 		graph,
 		configurations.image(board_start, player_count + 1),
@@ -131,6 +131,7 @@ def test_generate_board_graph1() -> None:
 		player_count,
 		win_conditions,
 	)
+	graph_drawer.draw()
 
 	return
 
@@ -173,14 +174,16 @@ def test_generate_board_graph2() -> None:
 
 	# Exporting and drawing.
 	#exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)
-	graphing.draw(
-		f"graph0_{size[0]}x{size[1]}_d{depth}", 
+	graph_drawer = graphing.GraphDrawer(
+		f"graph{configurations.image(board_start, player_count + 1)}_{size[0]}x{size[1]}_d{depth}", 
 		graph,
 		configurations.image(board_start, player_count + 1),
 		player_start,
 		player_count,
 		win_conditions,
+		layout_engine=LayoutEngine.SFDP,
 	)
+	graph_drawer.draw()
 
 	return
 
@@ -241,9 +244,9 @@ def main() -> None:
 
 	test_next_configuration1()
 
-	test_generate_board_graph1()
+	#test_generate_board_graph1()
 
-	#test_generate_board_graph2()
+	test_generate_board_graph2()
 
 	#test_win_conditions1()
 

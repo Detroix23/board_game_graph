@@ -8,8 +8,8 @@ import time
 
 import graphviz  # pyright: ignore[reportMissingTypeStubs]
 
-from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH
-from tic_tac_toe_detroix23 import conditions
+from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH, FileFormat, LayoutEngine
+from tic_tac_toe_detroix23 import conditions, graphs
 
 def hsv(hue: float, saturation: float, value: float) -> str:
     """
@@ -23,7 +23,7 @@ def draw_basic(
 ) -> graphviz.Digraph:
     """
     Draw a with `graphviz` the `graph`.
-    Basic: all node are the same
+    Basic: all node are the same.
     """
     print(f"(?) graphing.draw(name={name}) Start...")
     time_start: float = time.perf_counter()
@@ -60,92 +60,138 @@ def draw_basic(
     print(f"(?) graphing.draw(name={name}) End in {time.perf_counter() - time_start}s.")
     return dot
 
-def draw(
-    name: str, 
-    graph: Graph,
-    node_start: int,
-    player_start: int,
-    player_count: int,
-    win_conditions: conditions.WinConditions,
-) -> graphviz.Digraph:
+class GraphDrawer:
     """
-    Draw a with `graphviz` the `graph`.
-    Style:
-    - squared are win. 
+    # Complete `GraphDrawer` with `graphviz`.
     """
-    print(f"(?) graphing.draw(name={name}) Start...")
-    time_start: float = time.perf_counter()
-
-    dot: graphviz.Digraph = graphviz.Digraph(
-        name, 
-        comment="Tic-Tac-Toe.",
-        engine="neato",
-        strict=True,
-        format="svg",
-        graph_attr={
-            "splines": "true",
-            "overlap": "false",
-            "bgcolor": "white",
-        },
-        node_attr={
-            "style": "filled",
-            "fillcolor": "white",
-            "color": "black",
-            "arrowhead": "diamond",
-            "shape": "circle",
-            "width": "0.69",
-            "fixedsize": "true",
-        }
-    )
-
-
-    # Breadth-first explore.
-    depth_start: int = 0
-    visited: set[int] = set()
-    queue: list[tuple[int, int]] = [(node_start, depth_start)]
-
-    while queue:
-        node, depth = queue.pop(0)
-        if node not in visited:
-            visited.add(node)
-            
-            # Node configuration.
-            shape: str = "circle"
-            if win_conditions.is_win(node):
-                # Win.
-                shape = "box"
-            elif len(graph.get(node, [])) == 0:
-                # Leaf.
-                shape = "egg"
-
-            dot.node(  # pyright: ignore[reportUnknownMemberType]
-                str(node),
-                shape=shape,
-                fillcolor=hsv(
-                    ((depth + player_start - 1) % player_count) / (player_count + 1), 
-                    0.9, 
-                    0.9,
-                ),
-            )
-
-            for neighbor in graph.get(node, []):
-                if neighbor not in visited:
-                    queue.append((int(neighbor), depth + 1))
-
-    # Linking.
-    for node, neighbors in graph.items():
-        for neighbor in neighbors:
-            dot.edge(  # pyright: ignore[reportUnknownMemberType]
-                str(node), 
-                str(neighbor),
-            )
+    name: str
+    graph: Graph
+    node_start: int
+    player_start: int
+    player_count: int
+    win_conditions: conditions.WinConditions
+    format: FileFormat
+    layout_engine: LayoutEngine
     
-    dot.render(  # pyright: ignore[reportUnknownMemberType]
-        filename=f"ttt_{name}.neato.dot",
-        directory=str(PATH_GRAPH), 
-        format="svg",
-        view=True,
-    ) 
+    dot: graphviz.Digraph
 
-    print(f"(?) graphing.draw(name={name}) End in {time.perf_counter() - time_start}s.")
-    return dot
+    def __init__(
+        self,
+        name: str, 
+        graph: Graph,
+        node_start: int,
+        player_start: int,
+        player_count: int,
+        win_conditions: conditions.WinConditions,
+        format: FileFormat = FileFormat.DEFAULT,
+        layout_engine: LayoutEngine = LayoutEngine.DEFAULT,
+    ) -> None:
+        """
+        Instantiate a `GraphDrawer` and the `dot`. Does not draw the graph.
+        """
+        self.name = name
+        self.graph = graph
+        self.node_start = node_start
+        self.player_start = player_start
+        self.player_count = player_count
+        self.win_conditions = win_conditions
+        self.format = format
+        self.layout_engine = layout_engine
+
+        self.dot: graphviz.Digraph = graphviz.Digraph(
+            self.name, 
+            comment=f"Tic-Tac-Toe play-graph. Start={self.node_start}",
+            engine=self.layout_engine.to_str(),
+            strict=True,
+            format=self.format.to_str(),
+            graph_attr={
+                "splines": "true",
+                "overlap": "false",
+                "bgcolor": "white",
+            },
+            node_attr={
+                "style": "filled",
+                "fillcolor": "white",
+                "color": "black",
+                "arrowhead": "diamond",
+                "shape": "circle",
+                "width": "0.69",
+                "fixedsize": "true",
+            }
+        )
+        return
+
+    def add_node(
+        self,
+        node: int,
+        depth: int,
+    ) -> None:
+        """
+        Node configuration to add to `dot`.
+        Style:
+        - colors: 1='red', 2='cyan'; 
+        - 'circle' is normal;
+        - 'box' is a win;
+        - 'egg' is a leaf.
+        """ 
+        shape: str = "circle"
+        if self.win_conditions.is_win(node):
+            shape = "box"
+        elif len(self.graph.get(node, [])) == 0:
+            shape = "egg"
+
+        self.dot.node(  # pyright: ignore[reportUnknownMemberType]
+            str(node),
+            shape=shape,
+            fillcolor=hsv(
+                ((depth + self.player_start - 1) % self.player_count) / self.player_count, 
+                0.9, 
+                0.9,
+            ),
+        )
+        return
+
+    def render(self) -> None:
+        """
+        Render the `dot`.
+        """
+        self.dot.render(  # pyright: ignore[reportUnknownMemberType]
+            filename=f"ttt_{self.name}.{self.layout_engine.to_str()}.dot",
+            directory=str(PATH_GRAPH), 
+            format="svg",
+            view=True,
+        ) 
+
+    def draw(self) -> graphviz.Digraph:
+        """
+        Draw a with `graphviz` the `graph`.
+
+        Style:
+        - colors: 1='red', 2='cyan'; 
+        - 'circle' is normal;
+        - 'box' is a win;
+        - 'egg' is a leaf.
+        """
+        print(f"(?) graphing.draw(name={self.name}) Start...")
+        time_start: float = time.perf_counter()
+
+        # Breadth-first explore.
+        for node, depth in graphs.depth_indexing(
+            self.graph,
+            self.node_start,
+            depth_start=0,
+        ):
+            self.add_node(node, depth)
+
+        # Linking.
+        for node, neighbors in self.graph.items():
+            for neighbor in neighbors:
+                self.dot.edge(  # pyright: ignore[reportUnknownMemberType]
+                    str(node), 
+                    str(neighbor),
+                )
+
+        self.render()
+
+        print(f"(?) graphing.draw(name={self.name}) End in {time.perf_counter() - time_start}s.")
+        return self.dot
