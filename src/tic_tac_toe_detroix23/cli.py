@@ -2,11 +2,12 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/cli.py
 """
+import pprint
 from typing import Final, TypeVar, Type
 
 from tic_tac_toe_detroix23.definitions import Board, Graph, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import (
-    configurations, plays, conditions, graphs, ui, exports, graphing
+    configurations, plays, conditions, graphs, ui, exports, graphing, optimization
 )
 
 HELP: Final[str] = """
@@ -148,7 +149,7 @@ def draw_graph() -> None:
 
             print(f"Graph node count: \n  q={len(graph)}")
 
-            graph_index = graphs.indexing(
+            graph_index: graphs.GraphIndex = graphs.indexing(
                 graph,
                 node_start,
                 player_start,
@@ -167,11 +168,29 @@ def draw_graph() -> None:
             for win_state, count in end_states.items():
                 print(f"  {win_state}: {count};")
 
+            print("Neighbor nodes outcomes: ")
+            player_next: int = plays.next_player(player_start, player_count)
+            next_best_node: int = optimization.next_best_node(
+                node_start,
+                graph,
+                graph_index,
+                player_next,
+                player_count,
+                method=optimization.NextBestNodeMethod.COUNT,
+            )
+            print(f"=> Next best for player i={player_next}: n={next_best_node}.")
+
+            """
+            print("Ties: ")
+            for code, state in graph_index.items():
+                if state.win_state == 0:
+                    print(f"- {code}")
+            """
+                    
             # Exporting and graphing.
-            print("\n### Outputs.")
             name: str = f"manual{node_start}_{size[0]}x{size[1]}_d{depth}"
-            
-            
+            print(f"\n### Outputs (as `{name}`).")
+
             exports.play_graph(
                 f"ttt_{name}", 
                 graph, 
@@ -182,6 +201,9 @@ def draw_graph() -> None:
             )
 
             if depth != -1 and depth <= 3:
+                print("Dictionary")
+                pprint.pprint(graph)
+
                 graph_drawer = graphing.GraphDrawer(
                     name,  
                     graph,

@@ -1,0 +1,134 @@
+// Tic-Tac-Toe play-graph. Start=2
+strict digraph manual2_3x3_d2 {
+	graph [bgcolor=white overlap=false splines=true]
+	node [arrowhead=diamond color=black fillcolor=white fixedsize=true shape=circle style=filled width=0.69]
+	2 [fillcolor="0.500 0.900 0.900" shape=circle]
+	6563 [fillcolor="0.000 0.900 0.900" shape=circle]
+	2189 [fillcolor="0.000 0.900 0.900" shape=circle]
+	731 [fillcolor="0.000 0.900 0.900" shape=circle]
+	245 [fillcolor="0.000 0.900 0.900" shape=circle]
+	83 [fillcolor="0.000 0.900 0.900" shape=circle]
+	29 [fillcolor="0.000 0.900 0.900" shape=circle]
+	11 [fillcolor="0.000 0.900 0.900" shape=circle]
+	5 [fillcolor="0.000 0.900 0.900" shape=circle]
+	10937 [fillcolor="0.500 0.900 0.900" shape=egg]
+	8021 [fillcolor="0.500 0.900 0.900" shape=egg]
+	7049 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6725 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6617 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6581 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6569 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15311 [fillcolor="0.500 0.900 0.900" shape=egg]
+	3647 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2675 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2351 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2243 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2207 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2195 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13853 [fillcolor="0.500 0.900 0.900" shape=egg]
+	5105 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1217 [fillcolor="0.500 0.900 0.900" shape=egg]
+	893 [fillcolor="0.500 0.900 0.900" shape=egg]
+	785 [fillcolor="0.500 0.900 0.900" shape=egg]
+	749 [fillcolor="0.500 0.900 0.900" shape=egg]
+	737 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13367 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4619 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1703 [fillcolor="0.500 0.900 0.900" shape=egg]
+	407 [fillcolor="0.500 0.900 0.900" shape=egg]
+	299 [fillcolor="0.500 0.900 0.900" shape=egg]
+	263 [fillcolor="0.500 0.900 0.900" shape=egg]
+	251 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13205 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4457 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1541 [fillcolor="0.500 0.900 0.900" shape=egg]
+	569 [fillcolor="0.500 0.900 0.900" shape=egg]
+	137 [fillcolor="0.500 0.900 0.900" shape=egg]
+	101 [fillcolor="0.500 0.900 0.900" shape=egg]
+	89 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13151 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4403 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1487 [fillcolor="0.500 0.900 0.900" shape=egg]
+	515 [fillcolor="0.500 0.900 0.900" shape=egg]
+	191 [fillcolor="0.500 0.900 0.900" shape=egg]
+	47 [fillcolor="0.500 0.900 0.900" shape=egg]
+	35 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13133 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4385 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1469 [fillcolor="0.500 0.900 0.900" shape=egg]
+	497 [fillcolor="0.500 0.900 0.900" shape=egg]
+	173 [fillcolor="0.500 0.900 0.900" shape=egg]
+	65 [fillcolor="0.500 0.900 0.900" shape=egg]
+	17 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13127 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4379 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1463 [fillcolor="0.500 0.900 0.900" shape=egg]
+	491 [fillcolor="0.500 0.900 0.900" shape=egg]
+	167 [fillcolor="0.500 0.900 0.900" shape=egg]
+	59 [fillcolor="0.500 0.900 0.900" shape=egg]
+	23 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2 -> 6563
+	2 -> 2189
+	2 -> 731
+	2 -> 245
+	2 -> 83
+	2 -> 29
+	2 -> 11
+	2 -> 5
+	6563 -> 10937
+	6563 -> 8021
+	6563 -> 7049
+	6563 -> 6725
+	6563 -> 6617
+	6563 -> 6581
+	6563 -> 6569
+	2189 -> 15311
+	2189 -> 3647
+	2189 -> 2675
+	2189 -> 2351
+	2189 -> 2243
+	2189 -> 2207
+	2189 -> 2195
+	731 -> 13853
+	731 -> 5105
+	731 -> 1217
+	731 -> 893
+	731 -> 785
+	731 -> 749
+	731 -> 737
+	245 -> 13367
+	245 -> 4619
+	245 -> 1703
+	245 -> 407
+	245 -> 299
+	245 -> 263
+	245 -> 251
+	83 -> 13205
+	83 -> 4457
+	83 -> 1541
+	83 -> 569
+	83 -> 137
+	83 -> 101
+	83 -> 89
+	29 -> 13151
+	29 -> 4403
+	29 -> 1487
+	29 -> 515
+	29 -> 191
+	29 -> 47
+	29 -> 35
+	11 -> 13133
+	11 -> 4385
+	11 -> 1469
+	11 -> 497
+	11 -> 173
+	11 -> 65
+	11 -> 17
+	5 -> 13127
+	5 -> 4379
+	5 -> 1463
+	5 -> 491
+	5 -> 167
+	5 -> 59
+	5 -> 23
+}

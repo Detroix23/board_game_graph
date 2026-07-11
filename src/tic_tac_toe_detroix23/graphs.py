@@ -24,6 +24,7 @@ class NodeState:
     - `> 0`: winning player's ID;
     - `-1`: else.
     """
+
     def __init__(
         self,
         node: int,
@@ -141,7 +142,8 @@ def outcomes(
     Count all outcomes, `win_states`, of the `graph`.
     """
     counter: dict[int, int] = {
-        index: 0 for index in range(-1, player_count + 1)
+        index: 0 
+        for index in range(-1, player_count + 1)
     }
 
     for node_state in graph_index.values():

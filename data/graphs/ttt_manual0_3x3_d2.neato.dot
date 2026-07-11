@@ -1,0 +1,168 @@
+// Tic-Tac-Toe play-graph. Start=0
+strict digraph manual0_3x3_d2 {
+	graph [bgcolor=white overlap=false splines=true]
+	node [arrowhead=diamond color=black fillcolor=white fixedsize=true shape=circle style=filled width=0.69]
+	0 [fillcolor="0.500 0.900 0.900" shape=circle]
+	6561 [fillcolor="0.000 0.900 0.900" shape=circle]
+	2187 [fillcolor="0.000 0.900 0.900" shape=circle]
+	729 [fillcolor="0.000 0.900 0.900" shape=circle]
+	243 [fillcolor="0.000 0.900 0.900" shape=circle]
+	81 [fillcolor="0.000 0.900 0.900" shape=circle]
+	27 [fillcolor="0.000 0.900 0.900" shape=circle]
+	9 [fillcolor="0.000 0.900 0.900" shape=circle]
+	3 [fillcolor="0.000 0.900 0.900" shape=circle]
+	1 [fillcolor="0.000 0.900 0.900" shape=circle]
+	10935 [fillcolor="0.500 0.900 0.900" shape=egg]
+	8019 [fillcolor="0.500 0.900 0.900" shape=egg]
+	7047 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6723 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6615 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6579 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6567 [fillcolor="0.500 0.900 0.900" shape=egg]
+	6563 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15309 [fillcolor="0.500 0.900 0.900" shape=egg]
+	3645 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2673 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2349 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2241 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2205 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2193 [fillcolor="0.500 0.900 0.900" shape=egg]
+	2189 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13851 [fillcolor="0.500 0.900 0.900" shape=egg]
+	5103 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1215 [fillcolor="0.500 0.900 0.900" shape=egg]
+	891 [fillcolor="0.500 0.900 0.900" shape=egg]
+	783 [fillcolor="0.500 0.900 0.900" shape=egg]
+	747 [fillcolor="0.500 0.900 0.900" shape=egg]
+	735 [fillcolor="0.500 0.900 0.900" shape=egg]
+	731 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13365 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4617 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1701 [fillcolor="0.500 0.900 0.900" shape=egg]
+	405 [fillcolor="0.500 0.900 0.900" shape=egg]
+	297 [fillcolor="0.500 0.900 0.900" shape=egg]
+	261 [fillcolor="0.500 0.900 0.900" shape=egg]
+	249 [fillcolor="0.500 0.900 0.900" shape=egg]
+	245 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13203 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4455 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1539 [fillcolor="0.500 0.900 0.900" shape=egg]
+	567 [fillcolor="0.500 0.900 0.900" shape=egg]
+	135 [fillcolor="0.500 0.900 0.900" shape=egg]
+	99 [fillcolor="0.500 0.900 0.900" shape=egg]
+	87 [fillcolor="0.500 0.900 0.900" shape=egg]
+	83 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13149 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4401 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1485 [fillcolor="0.500 0.900 0.900" shape=egg]
+	513 [fillcolor="0.500 0.900 0.900" shape=egg]
+	189 [fillcolor="0.500 0.900 0.900" shape=egg]
+	45 [fillcolor="0.500 0.900 0.900" shape=egg]
+	33 [fillcolor="0.500 0.900 0.900" shape=egg]
+	29 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13131 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4383 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1467 [fillcolor="0.500 0.900 0.900" shape=egg]
+	495 [fillcolor="0.500 0.900 0.900" shape=egg]
+	171 [fillcolor="0.500 0.900 0.900" shape=egg]
+	63 [fillcolor="0.500 0.900 0.900" shape=egg]
+	15 [fillcolor="0.500 0.900 0.900" shape=egg]
+	11 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13125 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4377 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1461 [fillcolor="0.500 0.900 0.900" shape=egg]
+	489 [fillcolor="0.500 0.900 0.900" shape=egg]
+	165 [fillcolor="0.500 0.900 0.900" shape=egg]
+	57 [fillcolor="0.500 0.900 0.900" shape=egg]
+	21 [fillcolor="0.500 0.900 0.900" shape=egg]
+	5 [fillcolor="0.500 0.900 0.900" shape=egg]
+	13123 [fillcolor="0.500 0.900 0.900" shape=egg]
+	4375 [fillcolor="0.500 0.900 0.900" shape=egg]
+	1459 [fillcolor="0.500 0.900 0.900" shape=egg]
+	487 [fillcolor="0.500 0.900 0.900" shape=egg]
+	163 [fillcolor="0.500 0.900 0.900" shape=egg]
+	55 [fillcolor="0.500 0.900 0.900" shape=egg]
+	19 [fillcolor="0.500 0.900 0.900" shape=egg]
+	7 [fillcolor="0.500 0.900 0.900" shape=egg]
+	0 -> 6561
+	0 -> 2187
+	0 -> 729
+	0 -> 243
+	0 -> 81
+	0 -> 27
+	0 -> 9
+	0 -> 3
+	0 -> 1
+	6561 -> 10935
+	6561 -> 8019
+	6561 -> 7047
+	6561 -> 6723
+	6561 -> 6615
+	6561 -> 6579
+	6561 -> 6567
+	6561 -> 6563
+	2187 -> 15309
+	2187 -> 3645
+	2187 -> 2673
+	2187 -> 2349
+	2187 -> 2241
+	2187 -> 2205
+	2187 -> 2193
+	2187 -> 2189
+	729 -> 13851
+	729 -> 5103
+	729 -> 1215
+	729 -> 891
+	729 -> 783
+	729 -> 747
+	729 -> 735
+	729 -> 731
+	243 -> 13365
+	243 -> 4617
+	243 -> 1701
+	243 -> 405
+	243 -> 297
+	243 -> 261
+	243 -> 249
+	243 -> 245
+	81 -> 13203
+	81 -> 4455
+	81 -> 1539
+	81 -> 567
+	81 -> 135
+	81 -> 99
+	81 -> 87
+	81 -> 83
+	27 -> 13149
+	27 -> 4401
+	27 -> 1485
+	27 -> 513
+	27 -> 189
+	27 -> 45
+	27 -> 33
+	27 -> 29
+	9 -> 13131
+	9 -> 4383
+	9 -> 1467
+	9 -> 495
+	9 -> 171
+	9 -> 63
+	9 -> 15
+	9 -> 11
+	3 -> 13125
+	3 -> 4377
+	3 -> 1461
+	3 -> 489
+	3 -> 165
+	3 -> 57
+	3 -> 21
+	3 -> 5
+	1 -> 13123
+	1 -> 4375
+	1 -> 1459
+	1 -> 487
+	1 -> 163
+	1 -> 55
+	1 -> 19
+	1 -> 7
+}
