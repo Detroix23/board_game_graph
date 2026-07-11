@@ -47,10 +47,7 @@ def next_best_node(
                 best_node = int(node)
                 best_score = wins
 
-            print(
-                f"- node={node}, wins={wins}, best-ratio={best_score}, "
-                f"outcomes={outcomes};"
-            )
+            print(f"- node={node}, wins={wins}, outcomes={outcomes};")
 
         elif method == NextBestNodeMethod.RATIO:
             outcomes_count: int = sum(
@@ -66,7 +63,7 @@ def next_best_node(
                 best_score = ratio
 
             print(
-                f"- node={node}, ratio={ratio}, best-ratio={best_score}, "
+                f"- node={node}, ratio={ratio}, "
                 f"outcomes={outcomes}, c={outcomes_count};"
             )
 

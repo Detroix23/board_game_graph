@@ -12,30 +12,6 @@ from tic_tac_toe_detroix23 import (
 
 HELP: Final[str] = """
 ## Help.
-
-CLI arguments:
-- "h", "help":
-    Prints this help.
-
-- "t", "assertions":
-    tests.configurations1()
-    tests.next_configuration1()
-
-- "tbg1":
-    tests.generate_board_graph1()
-
-- "tbg2":
-    tests.generate_board_graph2()
-
-- "twc1":
-    tests.win_conditions1()
-
-- "r", "reverse":
-    cli.reverse_image()
-
-- "g", "graph":
-    cli.draw_graph()
-
 """
 
 _T_INPUT = TypeVar("_T_INPUT")

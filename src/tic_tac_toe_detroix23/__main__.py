@@ -4,44 +4,45 @@
 """
 import sys
 
+from utilities.arguments import Parser, Token
 from tic_tac_toe_detroix23 import cli, tests
 
 def argument_decider(arguments: list[str]) -> None:
     """
     Decides what to execute from `arguments`.
     """
-    if len(arguments) < 2:
-        print(f"(!) Not enough arguments (args:{arguments}).\n")
-        print(cli.HELP)
+    def print_help() -> None:
+        """
+        Prints CLI help using parser auto-generated help.
+        """
+        print(cli.HELP + parser.help_message())
         return
 
-    mode: str = arguments[1]
+    parser = Parser(tokens=[
+        Token({"t", "assertions"}, tests.general_assertions, "Run a global health-check."),
+        Token({"tbg1",}, tests.generate_board_graph1, "Test board with preset 1."),
+        Token({"tbg2",}, tests.generate_board_graph2, "Test board with preset 2."),
+        Token({"twc1",}, tests.win_conditions1, "Test win conditions."),
+        Token(
+            {"r", "reverse"}, cli.reverse_image, 
+            "Dialog to find the reverse image of a given `int` code",
+        ),
+        Token(
+            {"g", "graph"}, cli.draw_graph, 
+            "Dialog to draw and analyze a graph.",
+        ),
+        Token(
+            {"h", "-h", "help", "--help", "/?", "/h", "-?"}, print_help,
+            "Prints this help message.",
+        )
+    ])
 
-    if mode in {"h", "help"}:
-        print(cli.HELP)
+    if len(arguments) < 2:
+        print(f"(!) Not enough arguments (args:{arguments}).\n")
+        print_help()
+        return
 
-    elif mode in {"t", "assertions"}:
-        tests.configurations1()
-        tests.next_configuration1()
-
-    elif mode in {"tbg1",}:
-        tests.generate_board_graph1()
-
-    elif mode in {"tbg2",}:
-        tests.generate_board_graph2()
-    
-    elif mode in {"twc1",}:
-        tests.win_conditions1()
-
-    elif mode in {"r", "reverse"}:
-        cli.reverse_image()
-
-    elif mode in {"g", "graph"}:
-        cli.draw_graph()
-        
-    else:
-        print(f"\n(!) Argument 1 `mode` unknown (`{mode}`).\n")
-        print(cli.HELP)
+    parser.parse(arguments)
 
     return
 

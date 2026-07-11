@@ -273,3 +273,9 @@ def win_conditions1() -> None:
 	)
 
 	return
+
+def general_assertions() -> None:
+    configurations1()
+    next_configuration1()
+
+    return
