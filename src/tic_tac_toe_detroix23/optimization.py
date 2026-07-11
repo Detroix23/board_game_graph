@@ -27,10 +27,15 @@ def next_best_node(
     Take all sub-graphs (neighbors nodes, next plays) from `graph`,
     and choose the best move for `player` counting the `outcomes` from `graph_index`. 
     """
-    print(f"(?) optimization.next_best_node() Start n=`{starting_node}`, with method `{method.name}`.")
+    print(
+        "(?) optimization.next_best_node("
+        f"starting_node={starting_node}, player={player}, method={method.name}) Start."
+    )
 
     best_node: int = 0
     best_score: float = 0.0
+
+    nodes: list[tuple[int, str]] = []
 
     for node in graph[starting_node]:
         _sub, sub_index = graphs.sub_graph(
@@ -47,7 +52,7 @@ def next_best_node(
                 best_node = int(node)
                 best_score = wins
 
-            print(f"- node={node}, wins={wins}, outcomes={outcomes};")
+            nodes.append((int(node), f"node={node}, wins={wins}, outcomes={outcomes};"))
 
         elif method == NextBestNodeMethod.RATIO:
             outcomes_count: int = sum(
@@ -62,9 +67,12 @@ def next_best_node(
                 best_node = int(node)
                 best_score = ratio
 
-            print(
-                f"- node={node}, ratio={ratio}, "
+            nodes.append((int(node),
+                f"node={node}, ratio={ratio}, "
                 f"outcomes={outcomes}, c={outcomes_count};"
-            )
+            ))
+
+    for node, message in nodes:
+        print(f"{'*' if node == best_node else '-'} {message}")
 
     return best_node

@@ -28,7 +28,7 @@ def turn_player(
     """
     Returns the player ID `int` that plays at the given `turn`. 
     """
-    return (turn + 1 + player_start) % player_count + 1
+    return (turn + player_start - 1) % player_count + 1
 
 def next_board(
     board: Board,

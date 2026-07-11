@@ -51,6 +51,7 @@ def is_leaf(
 ) -> bool:
     """
     Returns if `node` is a leaf of `graph`. 
+    Used to determine ties or end of graph.
     """
     return len(graph.get(node, [])) == 0
 

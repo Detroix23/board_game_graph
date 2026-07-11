@@ -32,9 +32,13 @@ def argument_decider(arguments: list[str]) -> None:
             "Dialog to draw and analyze a graph.",
         ),
         Token(
+            {"aop", "auto"}, cli.auto_optimum_plays,
+            "Runs automatically the optimum plays."
+        ),
+        Token(
             {"h", "-h", "help", "--help", "/?", "/h", "-?"}, print_help,
             "Prints this help message.",
-        )
+        ),
     ])
 
     if len(arguments) < 2:

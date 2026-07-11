@@ -150,7 +150,7 @@ def draw_graph() -> None:
                 node_start,
                 graph,
                 graph_index,
-                player_next,
+                player_start,
                 player_count,
                 method=optimization.NextBestNodeMethod.COUNT,
             )
@@ -195,5 +195,95 @@ def draw_graph() -> None:
 
     except KeyboardInterrupt as interrupt:
         print(f"\nInterrupted by CTRL+C. Details: \n```\n{interrupt}\n```\n")
+
+    return
+
+def auto_optimum_plays() -> None:
+    """
+    Let the plays be chosen by the `optimization.next_best_node` automatically. 
+    """
+    print("## Auto-optimum play.\n")
+
+    play: int = 0
+    player_count: int = get_input(int, "Player count", 2)
+    player: int = get_input(int, "Starting player", 1)
+    size: tuple[int, int] = (
+        get_input(int, "Size X of the board", 3),
+        get_input(int, "Size Y of the board", 3),
+    )
+    win_length: int = get_input(int, "Aligned length to win", 3)
+    node: int = get_input(int, "Node code", 0)
+    board: Board = configurations.reverse_image(
+        node,
+        player_count + 1,
+        size[0] * size[1],
+    )
+
+    win_conditions = conditions.WinConditions(
+        size,
+        player_count,
+        win_length,
+    )
+    win_conditions.generate()
+
+    graph: Graph = plays.generate_graph(
+        board,
+        size,
+        plays.next_player(player, player_count, -1),
+        player_count,
+        win_conditions,
+    )
+    graph_index: graphs.GraphIndex = graphs.indexing(
+        graph,
+        node,
+        player,
+        plays.next_player(player, player_count, 0),
+        win_conditions,
+        depth_start=0,
+    )
+
+    print()
+
+    while not (
+        win_conditions.is_win(node) 
+        or graphs.is_leaf(graph, node)
+    ):
+        print(f"- Play {play}.")
+
+        node: int = optimization.next_best_node(
+            node,
+            graph,
+            graph_index,
+            player,
+            player_count,
+            method=optimization.NextBestNodeMethod.RATIO,
+        )
+        board: Board = configurations.reverse_image(
+            node,
+            player_count + 1,
+            size[0] * size[1],
+        )
+
+        graph = plays.generate_graph(
+            board,
+            size,
+            player,
+            player_count,
+            win_conditions,
+        )
+        graph_index = graphs.indexing(
+            graph,
+            node,
+            player,
+            player_count,
+            win_conditions,
+            depth_start=0,
+        )
+
+        print(f"Player i={player}, play n={node}, board: ")
+        print(ui.format_board(board, size))
+
+        play += 1
+        player = plays.next_player(player, player_count)
 
     return

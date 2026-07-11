@@ -130,7 +130,7 @@ class WinConditions:
     def generate(self) -> set[int]:
         """
         Precompute all wining board in a `BoardList`,
-        where winning is lining `win_length`.
+        where winning is lining `win_length` plays.
         """
         print("(?) conditions.WinConditions.generate() Start...")
         time_start: float = time.perf_counter()
