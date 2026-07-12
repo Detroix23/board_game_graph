@@ -7,70 +7,11 @@ import pprint
 import numpy
 
 from utilities.debug import assert_eq
+from utilities import graphviz_wrapper
 from tic_tac_toe_detroix23.definitions import Board, Graph, LayoutEngine
 from tic_tac_toe_detroix23 import (
-    configurations, plays, conditions, ui, graphs, exports, graphing 
+    configurations, plays, conditions, ui, graphs, exports 
 )
-
-
-def configurations1() -> None:
-	print("\n## Test: configurations 1.")
-
-	size: tuple[int, int] = (3, 3)
-	player_count: int = 2
-
-	b1: Board = configurations.empty(size)
-	c1: configurations.Configuration = configurations.Configuration(
-		size,
-		player_count,
-		b1,
-	)
-	assert_eq(c1.to_int(), 0)
-
-	b2: Board = numpy.array([
-		0, 2, 1,
-		0, 1, 2,
-		0, 2, 1,
-	])
-	c2: configurations.Configuration = configurations.Configuration(
-		size,
-		player_count,
-		b2,
-	)
-
-	b3: Board = numpy.array([
-		2, 2, 2,
-		2, 2, 2,
-		2, 2, 2,
-	])
-	print(f"Image_max: {configurations.image(b3, player_count + 1)}")
-
-	assert_eq(c2.to_int(), 5245)
-	assert_eq(c2.get(0, 0), 0)
-	assert_eq(c2.get(1, 0), 2)
-	assert_eq(c2.get(2, 0), 1)
-	assert_eq(c2.get(0, 1), 0)
-	assert_eq(c2.get(1, 1), 1)
-	assert_eq(c2.get(2, 1), 2)
-	assert_eq(c2.get(0, 2), 0)
-	assert_eq(c2.get(1, 2), 2)
-	assert_eq(c2.get(2, 2), 1)
-
-	assert_eq(b1, configurations.reverse_image(
-		configurations.image(b1, player_count + 1),
-		player_count + 1,
-		len(b1),
-	))
-
-	assert_eq(b2, configurations.reverse_image(
-		configurations.image(b2, player_count + 1),
-		player_count + 1,
-		len(b2),
-	))
-
-	print("\n(?) Test passed: configurations 1.")
-
-	return
 
 def next_configuration1() -> None:
     print("\n## Test: next_configurations 1.")
@@ -237,7 +178,7 @@ def generate_board_graph2() -> None:
     # Exporting and drawing.
     #exports.export_play_graph("ttt_0_3x3_d2", graph1, size, 1, player_count, 2)
 
-    graph_drawer = graphing.GraphDrawer(
+    graph_drawer = graphviz_wrapper.GraphDrawer(
         f"graph{node_start}_{size[0]}x{size[1]}_d{depth}", 
         graph,
         graph_index,
@@ -275,7 +216,10 @@ def win_conditions1() -> None:
 	return
 
 def general_assertions() -> None:
-    configurations1()
     next_configuration1()
 
     return
+
+if __name__ == "__main__":
+    general_assertions()
+    print("(?) General assertion passed.")

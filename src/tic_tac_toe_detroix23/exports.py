@@ -7,7 +7,7 @@ import json
 
 import numpy 
 
-from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH, PATH_WINS
+from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPHS, PATH_WINS
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, o: object) -> object:
@@ -46,7 +46,7 @@ def play_graph(
     } 
 
     try:
-        with open(PATH_GRAPH / f"{name.strip()}.json", "w") as json_file:
+        with open(PATH_GRAPHS / f"{name.strip()}.json", "w") as json_file:
             json.dump(
                 data, 
                 json_file, 

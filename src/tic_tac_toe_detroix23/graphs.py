@@ -15,10 +15,19 @@ GraphIndex = dict[int, 'NodeState']
 class NodeState:
     """
     # Named tuple to index `NodeState`s of a graph.
+
+    Attributes:
+        `node`: `int` 
+        `depth`: `int`
+        `win_state`: `int`
+        `forced_wins`: `dict[int, int]` ***TODO***
+        `neighbors`: `list[int]` ***TODO***
     """
     node: int
     depth: int
     win_state: int
+    forced_wins: dict[int, int]
+    neighbors: list[int]
     """ 
     - `0`: game ending with a tie;
     - `> 0`: winning player's ID;

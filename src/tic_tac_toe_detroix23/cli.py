@@ -2,12 +2,12 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/cli.py
 """
-import pprint
 from typing import Final, TypeVar, Type
 
+from utilities import graphviz_wrapper, pyvis_wrapper
 from tic_tac_toe_detroix23.definitions import Board, Graph, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import (
-    configurations, plays, conditions, graphs, ui, exports, graphing, optimization
+    configurations, plays, conditions, graphs, ui, exports, optimization
 )
 
 HELP: Final[str] = """
@@ -80,7 +80,7 @@ def draw_graph() -> None:
         )
         win_length: int = get_input(int, "Aligned length to win", 3)
         file_format: FileFormat = FileFormat.SVG
-        layout_engine: LayoutEngine = LayoutEngine.NEATO
+        layout_engine: LayoutEngine = LayoutEngine.PYVIS
 
         print(f"""Global parameters:
   - player_count={player_count};
@@ -177,20 +177,36 @@ def draw_graph() -> None:
             )
 
             if depth != -1 and depth <= 3:
-                print("Dictionary")
-                pprint.pprint(graph)
+                print("Dictionary:")
+                print(ui.format_graph(graph))
 
-                graph_drawer = graphing.GraphDrawer(
-                    name,  
-                    graph,
-                    graph_index,
-                    configurations.image(board_start, player_count + 1),
-                    player_start,
-                    player_count,
-                    win_conditions,
-                    file_format,
-                    layout_engine,
-                )
+                graph_drawer: graphviz_wrapper.GraphDrawer | pyvis_wrapper.GraphDrawer
+
+                if layout_engine == LayoutEngine.PYVIS:
+                    graph_drawer = pyvis_wrapper.GraphDrawer(
+                        name,
+                        graph,
+                        graph_index,
+                        node_start,
+                        player_start,
+                        player_count,
+                        size,
+                        win_conditions
+                    )
+                
+                else:
+                    graph_drawer = graphviz_wrapper.GraphDrawer(
+                        name,  
+                        graph,
+                        graph_index,
+                        node_start,
+                        player_start,
+                        player_count,
+                        win_conditions,
+                        file_format,
+                        layout_engine,
+                    )
+                
                 graph_drawer.draw()
 
     except KeyboardInterrupt as interrupt:

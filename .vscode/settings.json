@@ -3,6 +3,7 @@
         "CIRCO",
         "Graphviz",
         "neato",
+        "pyvis",
         "SFDP",
         "TWOPI"
     ],

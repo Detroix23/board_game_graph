@@ -1,6 +1,6 @@
 """
 # Board game graphing: Tic-Tac-Toe.
-/src/tic_tac_toe_detroix23/graphing.py
+/src/utilities/graphviz_wrapper.py
 
 Draw graphs with `graphviz`.
 """
@@ -8,14 +8,9 @@ import time
 
 import graphviz  # pyright: ignore[reportMissingTypeStubs]
 
-from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPH, FileFormat, LayoutEngine
+from utilities import graphics
+from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPHVIZ, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import conditions, graphs
-
-def hsv(hue: float, saturation: float, value: float) -> str:
-    """
-    Format a `hsv` color to `str` for `graphviz`.
-    """
-    return f"{hue:.3f} {saturation:.3f} {value:.3f}"
 
 def draw_basic(
     name: str, 
@@ -52,7 +47,7 @@ def draw_basic(
     
     dot.render(  # pyright: ignore[reportUnknownMemberType]
         filename=f"ttt_{name}.neato.dot",
-        directory=str(PATH_GRAPH), 
+        directory=str(PATH_GRAPHVIZ), 
         format="svg",
         view=True,
     ) 
@@ -67,7 +62,7 @@ class GraphDrawer:
     """
     name: str
     graph: Graph
-    graph_index: dict[int, graphs.NodeState]
+    graph_index: graphs.GraphIndex
     node_start: int
     player_start: int
     player_count: int
@@ -81,7 +76,7 @@ class GraphDrawer:
         self,
         name: str, 
         graph: Graph,
-        graph_index: dict[int, graphs.NodeState],
+        graph_index: graphs.GraphIndex,
         node_start: int,
         player_start: int,
         player_count: int,
@@ -146,7 +141,7 @@ class GraphDrawer:
         self.dot.node(  # pyright: ignore[reportUnknownMemberType]
             str(node_state.node),
             shape=shape,
-            fillcolor=hsv(
+            fillcolor=graphics.hsv(
                 (
                     ((node_state.depth + self.player_start - 1) % self.player_count) 
                     / self.player_count
@@ -163,7 +158,7 @@ class GraphDrawer:
         """
         self.dot.render(  # pyright: ignore[reportUnknownMemberType]
             filename=f"ttt_{self.name}.{self.layout_engine.to_str()}.dot",
-            directory=str(PATH_GRAPH), 
+            directory=str(PATH_GRAPHVIZ), 
             format="svg",
             view=True,
         ) 

@@ -23,7 +23,9 @@ GraphBoard = dict[Board, BoardList]
 Graph = dict[int, numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]]
 
 
-PATH_GRAPH: Final[pathlib.Path] = pathlib.Path("./data/graphs")
+PATH_GRAPHS: Final[pathlib.Path] = pathlib.Path("./data/graphs")
+PATH_GRAPHVIZ: Final[pathlib.Path] = pathlib.Path("./data/graphviz")
+PATH_PYVIS: Final[pathlib.Path] = pathlib.Path("./data/pyvis")
 
 PATH_WINS: Final[pathlib.Path] = pathlib.Path("./data/wins")
 
@@ -68,21 +70,23 @@ class LayoutEngine(enum.Enum):
     """
     DEFAULT = 0
     DOT = 1
-    """ Hierarchical or layered drawings of directed graphs. """
+    """ **Graphviz**. Hierarchical or layered drawings of directed graphs. """
     NEATO = 2
-    """ Spring model layouts. """
+    """ **Graphviz**. Spring model layouts. """
     FDP = 3
-    """ Force-Directed Placement. """
+    """ **Graphviz**. Force-Directed Placement. """
     SFDP = 4
-    """ Scalable Force-Directed Placement. """
+    """ **Graphviz**. Scalable Force-Directed Placement. """
     CIRCO = 5
-    """ Circular layout. """
+    """ **Graphviz**. Circular layout. """
     TWOPI = 6
-    """ Radial layout. """
+    """ **Graphviz**. Radial layout. """
     OSAGE = 9
-    """ Draws clustered graphs. """
+    """ **Graphviz**. Draws clustered graphs. """
     PATCHWORK = 10
-    """ Draws map of clustered graph using a squarified tree-map layout. """
+    """ **Graphviz**. Draws map of clustered graph using a squarified tree-map layout. """
+    PYVIS = 11
+    """ **Pyvis**. HTML-JSON interactive render. """
 
     def to_str(self) -> str:
         """

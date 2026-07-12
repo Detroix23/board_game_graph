@@ -2,7 +2,7 @@
 # Board game graphing: utilities.
 /src/board_games_maths/arguments.py
 """
-from typing import Callable, Sequence
+from typing import Callable
 
 CalledFunction = Callable[[list[str], int], None] | Callable[[], None]
 """
@@ -22,6 +22,7 @@ class Token:
     tokens: set[str]
     function: CalledFunction
     description: str
+    function_arguments_count: int
     """ 
     Called when tokens matches. 
     
@@ -35,6 +36,7 @@ class Token:
         tokens: set[str], 
         function: CalledFunction,
         description: str, 
+        function_arguments_count: int = 0,
     ) -> None:
         """
         Creates a `Token`.
@@ -42,6 +44,7 @@ class Token:
         self.tokens = tokens
         self.description = description
         self.function = function
+        self.function_arguments_count = function_arguments_count
 
         return
     
@@ -91,27 +94,14 @@ class Parser:
                         "(?) utilities.arguments.Parser.parse() "
                         f"Argument `{argument}`: calling `{token.function.__name__}`."
                     )
-                    used = True
-                    exceptions: Sequence[Exception | None] = []
-
-                    try:
-                        token.function(arguments, index)  # type: ignore
-                    except Exception as exception:
-                        exceptions.append(exception)
-
-                    try: 
+                    if token.function_arguments_count == 0:
+                        used = True
                         token.function()  # type: ignore
-                    except Exception as exception:
-                        exceptions.append(exception)
 
-                    if len(exceptions) == 2:
-                        print(
-                            "(!) utilities.arguments.Parser.parse() "
-                            f"Failed: {len(exceptions)} exceptions raised:"
-                        )
-                        for exception in exceptions:
-                            print(f"- {exception};") 
-        
+                    elif token.function_arguments_count == 2:
+                        used = True
+                        token.function(arguments, index)  # type: ignore
+
             if not used:
                 print(
                     "\n(!) utilities.arguments.Parser.parse() "
