@@ -152,6 +152,22 @@ class GraphDrawer:
         )
         return
 
+    def populate(self) -> None:
+        """
+        Create the nodes and the edges.
+        """
+        # Breadth-first explore.
+        for node_state in self.graph_index.values():
+            self.add_node(node_state)
+        
+        # Linking.
+        for node, neighbors in self.graph.items():
+            for neighbor in neighbors:
+                self.dot.edge(  # pyright: ignore[reportUnknownMemberType]
+                    str(node), 
+                    str(neighbor),
+                )
+
     def render(self) -> None:
         """
         Render the `dot`.
@@ -176,18 +192,7 @@ class GraphDrawer:
         print(f"(?) graphing.draw(name={self.name}) Start...")
         time_start: float = time.perf_counter()
 
-        # Breadth-first explore.
-        for node_state in self.graph_index.values():
-            self.add_node(node_state)
-        
-        # Linking.
-        for node, neighbors in self.graph.items():
-            for neighbor in neighbors:
-                self.dot.edge(  # pyright: ignore[reportUnknownMemberType]
-                    str(node), 
-                    str(neighbor),
-                )
-
+        self.populate()
         self.render()
 
         time_elapsed: float = time.perf_counter() - time_start

@@ -79,6 +79,8 @@ def draw_graph() -> None:
             get_input(int, "Size Y of the board", 3),
         )
         win_length: int = get_input(int, "Aligned length to win", 3)
+        enable_draw: bool = input("Enable draw ? [y | n](y):").lower() in {"", "y", "ye", "yes"}
+        print(f"=> `{enable_draw}`")
         file_format: FileFormat = FileFormat.SVG
         layout_engine: LayoutEngine = LayoutEngine.PYVIS
 
@@ -176,7 +178,7 @@ def draw_graph() -> None:
                 2
             )
 
-            if depth != -1 and depth <= 3:
+            if enable_draw:
                 print("Dictionary:")
                 print(ui.format_graph(graph))
 

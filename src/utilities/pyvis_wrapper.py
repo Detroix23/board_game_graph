@@ -6,6 +6,7 @@ Draw graphs with `pyvis`.
 """
 import pyvis  # pyright: ignore[reportMissingTypeStubs]
 
+from utilities import graphics
 from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS
 from tic_tac_toe_detroix23 import configurations, conditions, graphs, ui
 
@@ -47,16 +48,18 @@ class GraphDrawer:
         self.size = size
         self.win_conditions = win_conditions
         self.network = pyvis.network.Network(
+            height="85vh",
+            width="100vw",
             directed=True,
             notebook=False,
             select_menu=True,       
         )
 
-        self.update_from_graph()
+        self.populate()
 
         return
     
-    def update_from_graph(self) -> None:
+    def populate(self) -> None:
         """
         Update `pyvis`' `Network` from `self` `graph` (`dict`).
         """
@@ -64,20 +67,26 @@ class GraphDrawer:
         player_symbols[0] = "_"
 
         # Nodes.
-        nodes: list[int] = [int(node) for node in set(self.graph.keys()
-            ).union(*[
-                set(neighbors.tolist()) 
-                for neighbors in self.graph.values()
-            ])
-        ]
+        for node, state in self.graph_index.items():
+            shape: str = "circle"
+            scale: int = max(1, len(self.graph.get(node, [])))
+            additional_settings: dict[str, int] = {}
+            if state.win_state > 0:
+                shape = "box"
+            elif state.win_state == 0:
+                shape = "ellipse"
+            elif node == self.node_start:
+                shape = "star"
+                additional_settings |= {
+                    "x": 0, 
+                    "y": 0, 
+                    "physics": False
+                }
 
-        print(type(nodes[0]))
-
-        self.network.add_nodes(  # pyright: ignore[reportUnknownMemberType]
-            nodes,
-            label=[str(node) for node in nodes],
-            title=[
-                ui.format_board(
+            self.network.add_node(  # pyright: ignore[reportUnknownMemberType]
+                node,
+                label=str(node),
+                title=ui.format_board(
                     configurations.reverse_image(
                         node, 
                         self.player_count + 1, 
@@ -88,10 +97,20 @@ class GraphDrawer:
                     intersection="",
                     lines="",
                     player_symbols=player_symbols,
-                ) 
-                for node in nodes
-            ],
-        )
+                ),
+                color="#"+graphics.hsv_to_rgb_hex(
+                    (
+                        ((state.depth + self.player_start - 1) % self.player_count) 
+                        / self.player_count
+                    ), 
+                    0.9, 
+                    0.9,
+                ),
+                shape=shape,
+                value=scale * 60,
+                size=scale * 60,
+                **additional_settings,
+            )
 
         # Edges.
         for node, neighbors in self.graph.items():
@@ -106,7 +125,9 @@ class GraphDrawer:
         """
         Draw a with `pyvis` the `graph`.
         """
-        self.network.show(  # pyright: ignore[reportUnknownMemberType]
+        self.network.toggle_physics(True)  # pyright: ignore[reportUnknownMemberType]
+        self.network.show_buttons()         # pyright: ignore[reportUnknownMemberType]
+        self.network.show(                  # pyright: ignore[reportUnknownMemberType]
             name=f"ttt_{self.name}.html",
             local=True,
             notebook=False,
