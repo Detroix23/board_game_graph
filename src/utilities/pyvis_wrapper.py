@@ -12,6 +12,60 @@ from utilities import graphics
 from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS, PATH_PYVIS
 from tic_tac_toe_detroix23 import configurations, conditions, graphs, ui
 
+class Shape:
+    """
+    # `pyvis`'s node `Shape`s.
+
+    https://pyvis.readthedocs.io/en/latest/documentation.html#pyvis.network.Network.add_node
+    
+    Text inside:
+    - ellipse, 
+    - circle, 
+    - database, 
+    - box, 
+    - text. 
+    
+    Text outside:
+    - image, 
+    - circularImage, 
+    - diamond, 
+    - dot, 
+    - star, 
+    - triangle, 
+    - triangleDown, 
+    - square
+    - icon.
+    """
+    ELLIPSE = "ellipse"
+    """ Text inside. """
+    CIRCLE = "circle" 
+    """ Text inside. """
+    DATABASE = "database" 
+    """ Text inside. """
+    BOX = "box" 
+    """ Text inside. """
+    TEXT = "text" 
+    """ Text inside. """
+    IMAGE = "image" 
+    """ Text outside. """
+    IMAGE_CIRCULAR = "circularImage" 
+    """ Text outside. """
+    DIAMOND = "diamond" 
+    """ Text outside. """
+    DOT = "dot" 
+    """ Text outside. """
+    STAR = "star" 
+    """ Text outside. """
+    TRIANGLE = "triangle" 
+    """ Text outside. """
+    TRIANGLE_DOWN = "triangleDown" 
+    """ Text outside. """
+    SQUARE = "square"
+    """ Text outside. """
+    ICON = "icon"
+    """ Text outside. """
+
+
 class GraphDrawer:
     """
     # Complete `GraphDrawer` with `graphviz`.
@@ -71,15 +125,19 @@ class GraphDrawer:
 
         # Nodes.
         for node, state in self.graph_index.items():
-            shape: str = "circle"
+            # Normal shape.
+            shape: str = Shape.DOT
             scale: int = max(1, len(self.graph.get(node, [])))
             additional_settings: dict[str, int] = {}
             if state.win_state > 0:
-                shape = "box"
+                # Win.
+                shape = Shape.SQUARE
             elif state.win_state == 0:
-                shape = "ellipse"
+                # Tie.
+                shape = Shape.TRIANGLE
             elif node == self.node_start:
-                shape = "star"
+                # Start.
+                shape = Shape.STAR
                 additional_settings |= {
                     "x": 0, 
                     "y": 0, 
@@ -102,7 +160,7 @@ class GraphDrawer:
                     player_symbols=player_symbols,
                 ),
                 color="#"+graphics.hsv_to_rgb_hex(
-                    state.player / self.player_count, 
+                    (state.player - 1) / self.player_count, 
                     0.9, 
                     0.9,
                 ),

@@ -142,7 +142,7 @@ class GraphDrawer:
             str(node_state.node),
             shape=shape,
             fillcolor=graphics.hsv(
-                node_state.player / self.player_count, 
+                node_state.player - 1/ self.player_count, 
                 0.9, 
                 0.9,
             ),

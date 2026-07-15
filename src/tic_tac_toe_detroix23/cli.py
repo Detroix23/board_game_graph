@@ -197,7 +197,13 @@ Global parameters:
             )
 
             if enable_draw:
-                print("Dictionary:")
+                print("Index: ")
+                print("- " + "\n- ".join([
+                    f"{node: >5}: {state}" 
+                    for node, state in graph_index.items()
+                ]))
+
+                print("Dictionary: ")
                 print(ui.format_graph(graph))
 
                 graph_drawer: graphviz_wrapper.GraphDrawer | pyvis_wrapper.GraphDrawer

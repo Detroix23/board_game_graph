@@ -61,6 +61,16 @@ class NodeState:
         self.neighbors = neighbors
 
         return
+    
+    def __str__(self) -> str:
+        """
+        Nice `NodeState` string representation of all the attributes.
+        """
+        return (
+            f"node={f'{self.node},': <6} depth={self.depth}, player={self.player}), "
+            f"win_state={f'{self.win_state},': <3} neighbors={self.neighbors})"
+        )
+
 
 def is_leaf(
     graph: Graph,
