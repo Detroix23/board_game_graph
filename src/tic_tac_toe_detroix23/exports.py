@@ -63,13 +63,16 @@ def play_graph(
 
 def win_images(
     name: str,
-    images: set[int],
+    images: dict[int, int],
     size: tuple[int, int],
     player_count: int, 
 ) -> None:
-    image_list: list[int] = list(images)
-    image_list.sort()
-
+    image_list: list[dict[str, int]] = [
+        {"image": image, "player": player}
+        for image, player in images.items()
+    ]
+    image_list.sort(key=lambda condition: condition["image"])
+    
     data: dict[str, object] = {
         "size": {
             "x": size[0],

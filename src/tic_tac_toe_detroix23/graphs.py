@@ -22,8 +22,8 @@ class NodeState:
         `node`: `int` 
         `depth`: `int`
         `win_state`: `int`
-        `forced_wins`: `dict[int, int]` ***TODO***
-        `neighbors`: `list[int]` ***TODO***
+        `forced_wins`: `dict[int, int]`
+        `neighbors`: `list[int]`
     """
     node: int
     depth: int

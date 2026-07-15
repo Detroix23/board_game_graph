@@ -202,7 +202,7 @@ def win_conditions1() -> None:
 		win_length=3
 	)
 
-	win_configurations: set[int] = win_generator.generate()
+	win_configurations: dict[int, int] = win_generator.get_win_images()
 
 	print(f"win_configurations (l={len(win_configurations)}): {win_configurations}")
 	
