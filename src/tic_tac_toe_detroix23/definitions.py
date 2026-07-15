@@ -20,7 +20,7 @@ ImageList = numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]
 
 GraphBoard = dict[Board, BoardList]
 
-Graph = dict[int, numpy.ndarray[tuple[int], numpy.dtype[numpy.uint32]]]
+Graph = dict[int, ImageList]
 
 
 PATH_GRAPHS: Final[pathlib.Path] = pathlib.Path("./data/graphs")
@@ -61,6 +61,12 @@ class FileFormat(enum.Enum):
         else:
             return DEFAULT_FILE_FORMAT
         
+    def __str__(self) -> str:
+        """
+        Returns the readable name of an option.
+        """
+        return self.name
+
 class LayoutEngine(enum.Enum):
     """
     # `LayoutEngine`s for `graphviz`.
@@ -96,3 +102,9 @@ class LayoutEngine(enum.Enum):
             return self.name.lower()
         else:
             return DEFAULT_GRAPHVIZ_ENGINE
+
+    def __str__(self) -> str:
+        """
+        Returns the readable name of an option.
+        """
+        return self.name

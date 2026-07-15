@@ -4,9 +4,11 @@
 
 Graph logic.
 """
+from typing import Optional
+
 import numpy
 
-from tic_tac_toe_detroix23.definitions import Graph
+from tic_tac_toe_detroix23.definitions import Graph, ImageList
 from tic_tac_toe_detroix23.conditions import WinConditions
 from tic_tac_toe_detroix23 import plays
 
@@ -27,7 +29,7 @@ class NodeState:
     depth: int
     win_state: int
     forced_wins: dict[int, int]
-    neighbors: list[int]
+    neighbors: Optional[ImageList]
     """ 
     - `0`: game ending with a tie;
     - `> 0`: winning player's ID;
@@ -39,6 +41,7 @@ class NodeState:
         node: int,
         depth: int,
         win_state: int,
+        neighbors: Optional[ImageList],
     ) -> None:
         """
         Create the named tuple `NodeState`.
@@ -51,7 +54,9 @@ class NodeState:
         self.node = node
         self.depth = depth
         self.win_state = win_state
-        
+        self.forced_wins = dict()
+        self.neighbors = neighbors
+
         return
 
 def is_leaf(
@@ -109,7 +114,8 @@ def indexing(
     queue: list[NodeState] = [NodeState(
         node_start, 
         depth_start, 
-        node_start_win_state
+        node_start_win_state,
+        graph[node_start],
     )]
     index: dict[int, NodeState] = dict()
 
@@ -120,7 +126,12 @@ def indexing(
             index[state.node] = (NodeState(
                 state.node, 
                 state.depth,
-                state.win_state
+                state.win_state,
+                (
+                    graph[state.node]
+                    if state.node in graph.keys()
+                    else None
+                ),
             ))
 
             for neighbor in graph.get(state.node, []):
@@ -130,16 +141,21 @@ def indexing(
                         player_start, 
                         player_count,
                     )
-                    
+                    image: int = int(neighbor)
                     queue.append(NodeState(
-                        int(neighbor), 
+                        image, 
                         state.depth + 1,
                         set_win_state(
                             graph,
-                            int(neighbor),
+                            image,
                             player,
                             win_conditions
-                        )
+                        ),
+                        (   
+                            graph[int(neighbor)]
+                            if image in graph.keys()
+                            else None
+                        ),
                     ))
 
     return index

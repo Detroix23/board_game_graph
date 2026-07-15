@@ -1,0 +1,963 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100vw;
+                 height: 85vh;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100vw;
+                 height: 85vh;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="0">0</option>
+                                
+                                    <option value="6561">6561</option>
+                                
+                                    <option value="2187">2187</option>
+                                
+                                    <option value="729">729</option>
+                                
+                                    <option value="243">243</option>
+                                
+                                    <option value="81">81</option>
+                                
+                                    <option value="27">27</option>
+                                
+                                    <option value="9">9</option>
+                                
+                                    <option value="3">3</option>
+                                
+                                    <option value="1">1</option>
+                                
+                                    <option value="10935">10935</option>
+                                
+                                    <option value="8019">8019</option>
+                                
+                                    <option value="7047">7047</option>
+                                
+                                    <option value="6723">6723</option>
+                                
+                                    <option value="6615">6615</option>
+                                
+                                    <option value="6579">6579</option>
+                                
+                                    <option value="6567">6567</option>
+                                
+                                    <option value="6563">6563</option>
+                                
+                                    <option value="15309">15309</option>
+                                
+                                    <option value="3645">3645</option>
+                                
+                                    <option value="2673">2673</option>
+                                
+                                    <option value="2349">2349</option>
+                                
+                                    <option value="2241">2241</option>
+                                
+                                    <option value="2205">2205</option>
+                                
+                                    <option value="2193">2193</option>
+                                
+                                    <option value="2189">2189</option>
+                                
+                                    <option value="13851">13851</option>
+                                
+                                    <option value="5103">5103</option>
+                                
+                                    <option value="1215">1215</option>
+                                
+                                    <option value="891">891</option>
+                                
+                                    <option value="783">783</option>
+                                
+                                    <option value="747">747</option>
+                                
+                                    <option value="735">735</option>
+                                
+                                    <option value="731">731</option>
+                                
+                                    <option value="13365">13365</option>
+                                
+                                    <option value="4617">4617</option>
+                                
+                                    <option value="1701">1701</option>
+                                
+                                    <option value="405">405</option>
+                                
+                                    <option value="297">297</option>
+                                
+                                    <option value="261">261</option>
+                                
+                                    <option value="249">249</option>
+                                
+                                    <option value="245">245</option>
+                                
+                                    <option value="13203">13203</option>
+                                
+                                    <option value="4455">4455</option>
+                                
+                                    <option value="1539">1539</option>
+                                
+                                    <option value="567">567</option>
+                                
+                                    <option value="135">135</option>
+                                
+                                    <option value="99">99</option>
+                                
+                                    <option value="87">87</option>
+                                
+                                    <option value="83">83</option>
+                                
+                                    <option value="13149">13149</option>
+                                
+                                    <option value="4401">4401</option>
+                                
+                                    <option value="1485">1485</option>
+                                
+                                    <option value="513">513</option>
+                                
+                                    <option value="189">189</option>
+                                
+                                    <option value="45">45</option>
+                                
+                                    <option value="33">33</option>
+                                
+                                    <option value="29">29</option>
+                                
+                                    <option value="13131">13131</option>
+                                
+                                    <option value="4383">4383</option>
+                                
+                                    <option value="1467">1467</option>
+                                
+                                    <option value="495">495</option>
+                                
+                                    <option value="171">171</option>
+                                
+                                    <option value="63">63</option>
+                                
+                                    <option value="15">15</option>
+                                
+                                    <option value="11">11</option>
+                                
+                                    <option value="13125">13125</option>
+                                
+                                    <option value="4377">4377</option>
+                                
+                                    <option value="1461">1461</option>
+                                
+                                    <option value="489">489</option>
+                                
+                                    <option value="165">165</option>
+                                
+                                    <option value="57">57</option>
+                                
+                                    <option value="21">21</option>
+                                
+                                    <option value="5">5</option>
+                                
+                                    <option value="13123">13123</option>
+                                
+                                    <option value="4375">4375</option>
+                                
+                                    <option value="1459">1459</option>
+                                
+                                    <option value="487">487</option>
+                                
+                                    <option value="163">163</option>
+                                
+                                    <option value="55">55</option>
+                                
+                                    <option value="19">19</option>
+                                
+                                    <option value="7">7</option>
+                                
+                                    <option value="11664">11664</option>
+                                
+                                    <option value="11178">11178</option>
+                                
+                                    <option value="11016">11016</option>
+                                
+                                    <option value="10962">10962</option>
+                                
+                                    <option value="10944">10944</option>
+                                
+                                    <option value="10938">10938</option>
+                                
+                                    <option value="10936">10936</option>
+                                
+                                    <option value="10206">10206</option>
+                                
+                                    <option value="8262">8262</option>
+                                
+                                    <option value="8100">8100</option>
+                                
+                                    <option value="8046">8046</option>
+                                
+                                    <option value="8028">8028</option>
+                                
+                                    <option value="8022">8022</option>
+                                
+                                    <option value="8020">8020</option>
+                                
+                                    <option value="9234">9234</option>
+                                
+                                    <option value="7776">7776</option>
+                                
+                                    <option value="7128">7128</option>
+                                
+                                    <option value="7074">7074</option>
+                                
+                                    <option value="7056">7056</option>
+                                
+                                    <option value="7050">7050</option>
+                                
+                                    <option value="7048">7048</option>
+                                
+                                    <option value="8910">8910</option>
+                                
+                                    <option value="7452">7452</option>
+                                
+                                    <option value="6966">6966</option>
+                                
+                                    <option value="6750">6750</option>
+                                
+                                    <option value="6732">6732</option>
+                                
+                                    <option value="6726">6726</option>
+                                
+                                    <option value="6724">6724</option>
+                                
+                                    <option value="8802">8802</option>
+                                
+                                    <option value="7344">7344</option>
+                                
+                                    <option value="6858">6858</option>
+                                
+                                    <option value="6696">6696</option>
+                                
+                                    <option value="6624">6624</option>
+                                
+                                    <option value="6618">6618</option>
+                                
+                                    <option value="6616">6616</option>
+                                
+                                    <option value="8766">8766</option>
+                                
+                                    <option value="7308">7308</option>
+                                
+                                    <option value="6822">6822</option>
+                                
+                                    <option value="6660">6660</option>
+                                
+                                    <option value="6606">6606</option>
+                                
+                                    <option value="6582">6582</option>
+                                
+                                    <option value="6580">6580</option>
+                                
+                                    <option value="8754">8754</option>
+                                
+                                    <option value="7296">7296</option>
+                                
+                                    <option value="6810">6810</option>
+                                
+                                    <option value="6648">6648</option>
+                                
+                                    <option value="6594">6594</option>
+                                
+                                    <option value="6576">6576</option>
+                                
+                                    <option value="6568">6568</option>
+                                
+                                    <option value="8750">8750</option>
+                                
+                                    <option value="7292">7292</option>
+                                
+                                    <option value="6806">6806</option>
+                                
+                                    <option value="6644">6644</option>
+                                
+                                    <option value="6590">6590</option>
+                                
+                                    <option value="6572">6572</option>
+                                
+                                    <option value="6566">6566</option>
+                                
+                                    <option value="16038">16038</option>
+                                
+                                    <option value="15552">15552</option>
+                                
+                                    <option value="15390">15390</option>
+                                
+                                    <option value="15336">15336</option>
+                                
+                                    <option value="15318">15318</option>
+                                
+                                    <option value="15312">15312</option>
+                                
+                                    <option value="15310">15310</option>
+                                
+                                    <option value="3888">3888</option>
+                                
+                                    <option value="3726">3726</option>
+                                
+                                    <option value="3672">3672</option>
+                                
+                                    <option value="3654">3654</option>
+                                
+                                    <option value="3648">3648</option>
+                                
+                                    <option value="3646">3646</option>
+                                
+                                    <option value="3402">3402</option>
+                                
+                                    <option value="2754">2754</option>
+                                
+                                    <option value="2700">2700</option>
+                                
+                                    <option value="2682">2682</option>
+                                
+                                    <option value="2676">2676</option>
+                                
+                                    <option value="2674">2674</option>
+                                
+                                    <option value="3078">3078</option>
+                                
+                                    <option value="2592">2592</option>
+                                
+                                    <option value="2376">2376</option>
+                                
+                                    <option value="2358">2358</option>
+                                
+                                    <option value="2352">2352</option>
+                                
+                                    <option value="2350">2350</option>
+                                
+                                    <option value="2970">2970</option>
+                                
+                                    <option value="2484">2484</option>
+                                
+                                    <option value="2322">2322</option>
+                                
+                                    <option value="2250">2250</option>
+                                
+                                    <option value="2244">2244</option>
+                                
+                                    <option value="2242">2242</option>
+                                
+                                    <option value="2934">2934</option>
+                                
+                                    <option value="2448">2448</option>
+                                
+                                    <option value="2286">2286</option>
+                                
+                                    <option value="2232">2232</option>
+                                
+                                    <option value="2208">2208</option>
+                                
+                                    <option value="2206">2206</option>
+                                
+                                    <option value="2922">2922</option>
+                                
+                                    <option value="2436">2436</option>
+                                
+                                    <option value="2274">2274</option>
+                                
+                                    <option value="2220">2220</option>
+                                
+                                    <option value="2202">2202</option>
+                                
+                                    <option value="2194">2194</option>
+                                
+                                    <option value="2918">2918</option>
+                                
+                                    <option value="2432">2432</option>
+                                
+                                    <option value="2270">2270</option>
+                                
+                                    <option value="2216">2216</option>
+                                
+                                    <option value="2198">2198</option>
+                                
+                                    <option value="2192">2192</option>
+                                
+                                    <option value="14094">14094</option>
+                                
+                                    <option value="13932">13932</option>
+                                
+                                    <option value="13878">13878</option>
+                                
+                                    <option value="13860">13860</option>
+                                
+                                    <option value="13854">13854</option>
+                                
+                                    <option value="13852">13852</option>
+                                
+                                    <option value="5346">5346</option>
+                                
+                                    <option value="5184">5184</option>
+                                
+                                    <option value="5130">5130</option>
+                                
+                                    <option value="5112">5112</option>
+                                
+                                    <option value="5106">5106</option>
+                                
+                                    <option value="5104">5104</option>
+                                
+                                    <option value="1296">1296</option>
+                                
+                                    <option value="1242">1242</option>
+                                
+                                    <option value="1224">1224</option>
+                                
+                                    <option value="1218">1218</option>
+                                
+                                    <option value="1216">1216</option>
+                                
+                                    <option value="1134">1134</option>
+                                
+                                    <option value="918">918</option>
+                                
+                                    <option value="900">900</option>
+                                
+                                    <option value="894">894</option>
+                                
+                                    <option value="892">892</option>
+                                
+                                    <option value="1026">1026</option>
+                                
+                                    <option value="864">864</option>
+                                
+                                    <option value="792">792</option>
+                                
+                                    <option value="786">786</option>
+                                
+                                    <option value="784">784</option>
+                                
+                                    <option value="990">990</option>
+                                
+                                    <option value="828">828</option>
+                                
+                                    <option value="774">774</option>
+                                
+                                    <option value="750">750</option>
+                                
+                                    <option value="748">748</option>
+                                
+                                    <option value="978">978</option>
+                                
+                                    <option value="816">816</option>
+                                
+                                    <option value="762">762</option>
+                                
+                                    <option value="744">744</option>
+                                
+                                    <option value="736">736</option>
+                                
+                                    <option value="974">974</option>
+                                
+                                    <option value="812">812</option>
+                                
+                                    <option value="758">758</option>
+                                
+                                    <option value="740">740</option>
+                                
+                                    <option value="734">734</option>
+                                
+                                    <option value="13446">13446</option>
+                                
+                                    <option value="13392">13392</option>
+                                
+                                    <option value="13374">13374</option>
+                                
+                                    <option value="13368">13368</option>
+                                
+                                    <option value="13366">13366</option>
+                                
+                                    <option value="4698">4698</option>
+                                
+                                    <option value="4644">4644</option>
+                                
+                                    <option value="4626">4626</option>
+                                
+                                    <option value="4620">4620</option>
+                                
+                                    <option value="4618">4618</option>
+                                
+                                    <option value="1782">1782</option>
+                                
+                                    <option value="1728">1728</option>
+                                
+                                    <option value="1710">1710</option>
+                                
+                                    <option value="1704">1704</option>
+                                
+                                    <option value="1702">1702</option>
+                                
+                                    <option value="432">432</option>
+                                
+                                    <option value="414">414</option>
+                                
+                                    <option value="408">408</option>
+                                
+                                    <option value="406">406</option>
+                                
+                                    <option value="378">378</option>
+                                
+                                    <option value="306">306</option>
+                                
+                                    <option value="300">300</option>
+                                
+                                    <option value="298">298</option>
+                                
+                                    <option value="342">342</option>
+                                
+                                    <option value="288">288</option>
+                                
+                                    <option value="264">264</option>
+                                
+                                    <option value="262">262</option>
+                                
+                                    <option value="330">330</option>
+                                
+                                    <option value="276">276</option>
+                                
+                                    <option value="258">258</option>
+                                
+                                    <option value="250">250</option>
+                                
+                                    <option value="326">326</option>
+                                
+                                    <option value="272">272</option>
+                                
+                                    <option value="254">254</option>
+                                
+                                    <option value="248">248</option>
+                                
+                                    <option value="13230">13230</option>
+                                
+                                    <option value="13212">13212</option>
+                                
+                                    <option value="13206">13206</option>
+                                
+                                    <option value="13204">13204</option>
+                                
+                                    <option value="4482">4482</option>
+                                
+                                    <option value="4464">4464</option>
+                                
+                                    <option value="4458">4458</option>
+                                
+                                    <option value="4456">4456</option>
+                                
+                                    <option value="1566">1566</option>
+                                
+                                    <option value="1548">1548</option>
+                                
+                                    <option value="1542">1542</option>
+                                
+                                    <option value="1540">1540</option>
+                                
+                                    <option value="594">594</option>
+                                
+                                    <option value="576">576</option>
+                                
+                                    <option value="570">570</option>
+                                
+                                    <option value="568">568</option>
+                                
+                                    <option value="144">144</option>
+                                
+                                    <option value="138">138</option>
+                                
+                                    <option value="136">136</option>
+                                
+                                    <option value="126">126</option>
+                                
+                                    <option value="102">102</option>
+                                
+                                    <option value="100">100</option>
+                                
+                                    <option value="114">114</option>
+                                
+                                    <option value="96">96</option>
+                                
+                                    <option value="88">88</option>
+                                
+                                    <option value="110">110</option>
+                                
+                                    <option value="92">92</option>
+                                
+                                    <option value="86">86</option>
+                                
+                                    <option value="13158">13158</option>
+                                
+                                    <option value="13152">13152</option>
+                                
+                                    <option value="13150">13150</option>
+                                
+                                    <option value="4410">4410</option>
+                                
+                                    <option value="4404">4404</option>
+                                
+                                    <option value="4402">4402</option>
+                                
+                                    <option value="1494">1494</option>
+                                
+                                    <option value="1488">1488</option>
+                                
+                                    <option value="1486">1486</option>
+                                
+                                    <option value="522">522</option>
+                                
+                                    <option value="516">516</option>
+                                
+                                    <option value="514">514</option>
+                                
+                                    <option value="198">198</option>
+                                
+                                    <option value="192">192</option>
+                                
+                                    <option value="190">190</option>
+                                
+                                    <option value="48">48</option>
+                                
+                                    <option value="46">46</option>
+                                
+                                    <option value="42">42</option>
+                                
+                                    <option value="34">34</option>
+                                
+                                    <option value="38">38</option>
+                                
+                                    <option value="32">32</option>
+                                
+                                    <option value="13134">13134</option>
+                                
+                                    <option value="13132">13132</option>
+                                
+                                    <option value="4386">4386</option>
+                                
+                                    <option value="4384">4384</option>
+                                
+                                    <option value="1470">1470</option>
+                                
+                                    <option value="1468">1468</option>
+                                
+                                    <option value="498">498</option>
+                                
+                                    <option value="496">496</option>
+                                
+                                    <option value="174">174</option>
+                                
+                                    <option value="172">172</option>
+                                
+                                    <option value="66">66</option>
+                                
+                                    <option value="64">64</option>
+                                
+                                    <option value="16">16</option>
+                                
+                                    <option value="14">14</option>
+                                
+                                    <option value="13126">13126</option>
+                                
+                                    <option value="4378">4378</option>
+                                
+                                    <option value="1462">1462</option>
+                                
+                                    <option value="490">490</option>
+                                
+                                    <option value="166">166</option>
+                                
+                                    <option value="58">58</option>
+                                
+                                    <option value="22">22</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#16e5e5", "id": 0, "label": "0", "physics": false, "shape": "star", "size": 540, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 540, "x": 0, "y": 0}, {"color": "#e51616", "id": 6561, "label": "6561", "shape": "circle", "size": 480, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 2187, "label": "2187", "shape": "circle", "size": 480, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 729, "label": "729", "shape": "circle", "size": 480, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 243, "label": "243", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 81, "label": "81", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 27, "label": "27", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 9, "label": "9", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 480}, {"color": "#e51616", "id": 3, "label": "3", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 480}, {"color": "#e51616", "id": 1, "label": "1", "shape": "circle", "size": 480, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 480}, {"color": "#16e5e5", "id": 10935, "label": "10935", "shape": "circle", "size": 420, "title": "X\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 8019, "label": "8019", "shape": "circle", "size": 420, "title": "X\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 7047, "label": "7047", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 6723, "label": "6723", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 6615, "label": "6615", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 6579, "label": "6579", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 6567, "label": "6567", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 6563, "label": "6563", "shape": "circle", "size": 420, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 15309, "label": "15309", "shape": "circle", "size": 420, "title": "O\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 3645, "label": "3645", "shape": "circle", "size": 420, "title": "_\u2502X\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2673, "label": "2673", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2349, "label": "2349", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2241, "label": "2241", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2205, "label": "2205", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2193, "label": "2193", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 2189, "label": "2189", "shape": "circle", "size": 420, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13851, "label": "13851", "shape": "circle", "size": 420, "title": "O\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 5103, "label": "5103", "shape": "circle", "size": 420, "title": "_\u2502O\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1215, "label": "1215", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 891, "label": "891", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 783, "label": "783", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 747, "label": "747", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 735, "label": "735", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 731, "label": "731", "shape": "circle", "size": 420, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13365, "label": "13365", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 4617, "label": "4617", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1701, "label": "1701", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 405, "label": "405", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nX\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 297, "label": "297", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 261, "label": "261", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 249, "label": "249", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 245, "label": "245", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13203, "label": "13203", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 4455, "label": "4455", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1539, "label": "1539", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 567, "label": "567", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nO\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 135, "label": "135", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 99, "label": "99", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 87, "label": "87", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 83, "label": "83", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13149, "label": "13149", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 4401, "label": "4401", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1485, "label": "1485", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 513, "label": "513", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nO\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 189, "label": "189", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502O\u2502X\n_\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 45, "label": "45", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\nO\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 33, "label": "33", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 29, "label": "29", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13131, "label": "13131", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 4383, "label": "4383", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1467, "label": "1467", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 495, "label": "495", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 171, "label": "171", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 63, "label": "63", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\nX\u2502_\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 15, "label": "15", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502O\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 11, "label": "11", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13125, "label": "13125", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 4377, "label": "4377", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 1461, "label": "1461", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 489, "label": "489", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 165, "label": "165", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 57, "label": "57", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 21, "label": "21", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502X\u2502_\n", "value": 420}, {"color": "#16e5e5", "id": 5, "label": "5", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502O\n", "value": 420}, {"color": "#16e5e5", "id": 13123, "label": "13123", "shape": "circle", "size": 420, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 4375, "label": "4375", "shape": "circle", "size": 420, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 1459, "label": "1459", "shape": "circle", "size": 420, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 487, "label": "487", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 163, "label": "163", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 55, "label": "55", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 19, "label": "19", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502X\n", "value": 420}, {"color": "#16e5e5", "id": 7, "label": "7", "shape": "circle", "size": 420, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502X\n", "value": 420}, {"color": "#e51616", "id": 11664, "label": "11664", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 11178, "label": "11178", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 11016, "label": "11016", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 10962, "label": "10962", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 10944, "label": "10944", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 10938, "label": "10938", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 10936, "label": "10936", "shape": "ellipse", "size": 60, "title": "X\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10206, "label": "10206", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8262, "label": "8262", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8100, "label": "8100", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8046, "label": "8046", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8028, "label": "8028", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8022, "label": "8022", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 8020, "label": "8020", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 9234, "label": "9234", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7776, "label": "7776", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7128, "label": "7128", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nO\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7074, "label": "7074", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nO\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7056, "label": "7056", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nO\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7050, "label": "7050", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7048, "label": "7048", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8910, "label": "8910", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7452, "label": "7452", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6966, "label": "6966", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nX\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6750, "label": "6750", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502O\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6732, "label": "6732", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502O\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6726, "label": "6726", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6724, "label": "6724", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8802, "label": "8802", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7344, "label": "7344", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6858, "label": "6858", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6696, "label": "6696", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6624, "label": "6624", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6618, "label": "6618", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6616, "label": "6616", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8766, "label": "8766", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7308, "label": "7308", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6822, "label": "6822", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nX\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6660, "label": "6660", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502X\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6606, "label": "6606", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502X\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6582, "label": "6582", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6580, "label": "6580", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8754, "label": "8754", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 7296, "label": "7296", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6810, "label": "6810", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6648, "label": "6648", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6594, "label": "6594", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6576, "label": "6576", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 6568, "label": "6568", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8750, "label": "8750", "shape": "ellipse", "size": 60, "title": "X\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 7292, "label": "7292", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 6806, "label": "6806", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 6644, "label": "6644", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 6590, "label": "6590", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 6572, "label": "6572", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 6566, "label": "6566", "shape": "ellipse", "size": 60, "title": "X\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 16038, "label": "16038", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15552, "label": "15552", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15390, "label": "15390", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15336, "label": "15336", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15318, "label": "15318", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15312, "label": "15312", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 15310, "label": "15310", "shape": "ellipse", "size": 60, "title": "O\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3888, "label": "3888", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 3726, "label": "3726", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 3672, "label": "3672", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 3654, "label": "3654", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 3648, "label": "3648", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 3646, "label": "3646", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502O\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3402, "label": "3402", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\nO\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2754, "label": "2754", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nO\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2700, "label": "2700", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nO\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2682, "label": "2682", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nO\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2676, "label": "2676", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nO\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2674, "label": "2674", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nO\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3078, "label": "3078", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\n_\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2592, "label": "2592", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nX\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2376, "label": "2376", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502O\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2358, "label": "2358", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502O\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2352, "label": "2352", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502O\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2350, "label": "2350", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502O\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2970, "label": "2970", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\n_\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2484, "label": "2484", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nX\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2322, "label": "2322", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502X\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2250, "label": "2250", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2244, "label": "2244", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2242, "label": "2242", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2934, "label": "2934", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\n_\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2448, "label": "2448", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nX\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2286, "label": "2286", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502X\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2232, "label": "2232", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502X\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2208, "label": "2208", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2206, "label": "2206", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2922, "label": "2922", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\n_\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2436, "label": "2436", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nX\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2274, "label": "2274", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502X\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2220, "label": "2220", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502X\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2202, "label": "2202", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 2194, "label": "2194", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2918, "label": "2918", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 2432, "label": "2432", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 2270, "label": "2270", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 2216, "label": "2216", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 2198, "label": "2198", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 2192, "label": "2192", "shape": "ellipse", "size": 60, "title": "_\u2502X\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 14094, "label": "14094", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13932, "label": "13932", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13878, "label": "13878", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13860, "label": "13860", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13854, "label": "13854", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13852, "label": "13852", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 5346, "label": "5346", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\nX\u2502_\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 5184, "label": "5184", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\n_\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 5130, "label": "5130", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\n_\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 5112, "label": "5112", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\n_\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 5106, "label": "5106", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\n_\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 5104, "label": "5104", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502X\n_\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1296, "label": "1296", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nO\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1242, "label": "1242", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nO\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1224, "label": "1224", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nO\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1218, "label": "1218", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nO\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1216, "label": "1216", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nO\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1134, "label": "1134", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nX\u2502O\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 918, "label": "918", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502O\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 900, "label": "900", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502O\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 894, "label": "894", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502O\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 892, "label": "892", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502O\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1026, "label": "1026", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nX\u2502_\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 864, "label": "864", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502X\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 792, "label": "792", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 786, "label": "786", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 784, "label": "784", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 990, "label": "990", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nX\u2502_\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 828, "label": "828", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502X\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 774, "label": "774", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502X\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 750, "label": "750", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 748, "label": "748", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 978, "label": "978", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nX\u2502_\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 816, "label": "816", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502X\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 762, "label": "762", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502X\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 744, "label": "744", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 736, "label": "736", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 974, "label": "974", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\nX\u2502_\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 812, "label": "812", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502X\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 758, "label": "758", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502X\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 740, "label": "740", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 734, "label": "734", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502X\n_\u2502_\u2502_\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 13446, "label": "13446", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\nX\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13392, "label": "13392", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\nX\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13374, "label": "13374", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\nX\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13368, "label": "13368", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13366, "label": "13366", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4698, "label": "4698", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\nX\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4644, "label": "4644", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\nX\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4626, "label": "4626", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\nX\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4620, "label": "4620", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\nX\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4618, "label": "4618", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\nX\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1782, "label": "1782", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\nX\u2502X\u2502_\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1728, "label": "1728", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\nX\u2502_\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1710, "label": "1710", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\nX\u2502_\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1704, "label": "1704", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\nX\u2502_\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1702, "label": "1702", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\nX\u2502_\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 432, "label": "432", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502O\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 414, "label": "414", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502O\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 408, "label": "408", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502O\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 406, "label": "406", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502O\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 378, "label": "378", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502X\u2502O\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 306, "label": "306", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 300, "label": "300", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 298, "label": "298", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 342, "label": "342", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502X\u2502_\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 288, "label": "288", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502X\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 264, "label": "264", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 262, "label": "262", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 330, "label": "330", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502X\u2502_\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 276, "label": "276", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502X\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 258, "label": "258", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 250, "label": "250", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 326, "label": "326", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502X\u2502_\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 272, "label": "272", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502X\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 254, "label": "254", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 248, "label": "248", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nX\u2502_\u2502_\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 13230, "label": "13230", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502X\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13212, "label": "13212", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502X\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13206, "label": "13206", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13204, "label": "13204", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4482, "label": "4482", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502X\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4464, "label": "4464", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502X\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4458, "label": "4458", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502X\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4456, "label": "4456", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502X\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1566, "label": "1566", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502X\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1548, "label": "1548", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502X\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1542, "label": "1542", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502X\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1540, "label": "1540", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502X\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 594, "label": "594", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502X\u2502X\n_\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 576, "label": "576", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502X\u2502_\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 570, "label": "570", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502X\u2502_\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 568, "label": "568", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502X\u2502_\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 144, "label": "144", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 138, "label": "138", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 136, "label": "136", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 126, "label": "126", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502X\nO\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 102, "label": "102", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 100, "label": "100", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 114, "label": "114", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502X\n_\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 96, "label": "96", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 88, "label": "88", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 110, "label": "110", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502X\n_\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 92, "label": "92", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 86, "label": "86", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502X\u2502_\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 13158, "label": "13158", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502X\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13152, "label": "13152", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13150, "label": "13150", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4410, "label": "4410", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502X\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4404, "label": "4404", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502X\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4402, "label": "4402", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502X\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1494, "label": "1494", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502X\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1488, "label": "1488", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502X\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1486, "label": "1486", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502X\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 522, "label": "522", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502X\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 516, "label": "516", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502X\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 514, "label": "514", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502X\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 198, "label": "198", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502X\nX\u2502_\u2502_\n", "value": 60}, {"color": "#e51616", "id": 192, "label": "192", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502X\n_\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 190, "label": "190", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502X\n_\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 48, "label": "48", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\nO\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 46, "label": "46", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\nO\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 42, "label": "42", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\nX\u2502O\u2502_\n", "value": 60}, {"color": "#e51616", "id": 34, "label": "34", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 38, "label": "38", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\nX\u2502_\u2502O\n", "value": 60}, {"color": "#e51616", "id": 32, "label": "32", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502X\n_\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 13134, "label": "13134", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 13132, "label": "13132", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4386, "label": "4386", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 4384, "label": "4384", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1470, "label": "1470", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 1468, "label": "1468", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 498, "label": "498", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 496, "label": "496", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 174, "label": "174", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 172, "label": "172", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 66, "label": "66", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\nX\u2502X\u2502_\n", "value": 60}, {"color": "#e51616", "id": 64, "label": "64", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\nX\u2502_\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16, "label": "16", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502O\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14, "label": "14", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nX\u2502X\u2502O\n", "value": 60}, {"color": "#e51616", "id": 13126, "label": "13126", "shape": "ellipse", "size": 60, "title": "O\u2502_\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4378, "label": "4378", "shape": "ellipse", "size": 60, "title": "_\u2502O\u2502_\n_\u2502_\u2502_\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1462, "label": "1462", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502O\n_\u2502_\u2502_\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 490, "label": "490", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\nO\u2502_\u2502_\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 166, "label": "166", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502O\u2502_\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 58, "label": "58", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 22, "label": "22", "shape": "ellipse", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502_\nO\u2502X\u2502X\n", "value": 60}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 0, "to": 6561}, {"arrows": "to", "from": 0, "to": 2187}, {"arrows": "to", "from": 0, "to": 729}, {"arrows": "to", "from": 0, "to": 243}, {"arrows": "to", "from": 0, "to": 81}, {"arrows": "to", "from": 0, "to": 27}, {"arrows": "to", "from": 0, "to": 9}, {"arrows": "to", "from": 0, "to": 3}, {"arrows": "to", "from": 0, "to": 1}, {"arrows": "to", "from": 6561, "to": 10935}, {"arrows": "to", "from": 6561, "to": 8019}, {"arrows": "to", "from": 6561, "to": 7047}, {"arrows": "to", "from": 6561, "to": 6723}, {"arrows": "to", "from": 6561, "to": 6615}, {"arrows": "to", "from": 6561, "to": 6579}, {"arrows": "to", "from": 6561, "to": 6567}, {"arrows": "to", "from": 6561, "to": 6563}, {"arrows": "to", "from": 10935, "to": 11664}, {"arrows": "to", "from": 10935, "to": 11178}, {"arrows": "to", "from": 10935, "to": 11016}, {"arrows": "to", "from": 10935, "to": 10962}, {"arrows": "to", "from": 10935, "to": 10944}, {"arrows": "to", "from": 10935, "to": 10938}, {"arrows": "to", "from": 10935, "to": 10936}, {"arrows": "to", "from": 8019, "to": 10206}, {"arrows": "to", "from": 8019, "to": 8262}, {"arrows": "to", "from": 8019, "to": 8100}, {"arrows": "to", "from": 8019, "to": 8046}, {"arrows": "to", "from": 8019, "to": 8028}, {"arrows": "to", "from": 8019, "to": 8022}, {"arrows": "to", "from": 8019, "to": 8020}, {"arrows": "to", "from": 7047, "to": 9234}, {"arrows": "to", "from": 7047, "to": 7776}, {"arrows": "to", "from": 7047, "to": 7128}, {"arrows": "to", "from": 7047, "to": 7074}, {"arrows": "to", "from": 7047, "to": 7056}, {"arrows": "to", "from": 7047, "to": 7050}, {"arrows": "to", "from": 7047, "to": 7048}, {"arrows": "to", "from": 6723, "to": 8910}, {"arrows": "to", "from": 6723, "to": 7452}, {"arrows": "to", "from": 6723, "to": 6966}, {"arrows": "to", "from": 6723, "to": 6750}, {"arrows": "to", "from": 6723, "to": 6732}, {"arrows": "to", "from": 6723, "to": 6726}, {"arrows": "to", "from": 6723, "to": 6724}, {"arrows": "to", "from": 6615, "to": 8802}, {"arrows": "to", "from": 6615, "to": 7344}, {"arrows": "to", "from": 6615, "to": 6858}, {"arrows": "to", "from": 6615, "to": 6696}, {"arrows": "to", "from": 6615, "to": 6624}, {"arrows": "to", "from": 6615, "to": 6618}, {"arrows": "to", "from": 6615, "to": 6616}, {"arrows": "to", "from": 6579, "to": 8766}, {"arrows": "to", "from": 6579, "to": 7308}, {"arrows": "to", "from": 6579, "to": 6822}, {"arrows": "to", "from": 6579, "to": 6660}, {"arrows": "to", "from": 6579, "to": 6606}, {"arrows": "to", "from": 6579, "to": 6582}, {"arrows": "to", "from": 6579, "to": 6580}, {"arrows": "to", "from": 6567, "to": 8754}, {"arrows": "to", "from": 6567, "to": 7296}, {"arrows": "to", "from": 6567, "to": 6810}, {"arrows": "to", "from": 6567, "to": 6648}, {"arrows": "to", "from": 6567, "to": 6594}, {"arrows": "to", "from": 6567, "to": 6576}, {"arrows": "to", "from": 6567, "to": 6568}, {"arrows": "to", "from": 6563, "to": 8750}, {"arrows": "to", "from": 6563, "to": 7292}, {"arrows": "to", "from": 6563, "to": 6806}, {"arrows": "to", "from": 6563, "to": 6644}, {"arrows": "to", "from": 6563, "to": 6590}, {"arrows": "to", "from": 6563, "to": 6572}, {"arrows": "to", "from": 6563, "to": 6566}, {"arrows": "to", "from": 2187, "to": 15309}, {"arrows": "to", "from": 2187, "to": 3645}, {"arrows": "to", "from": 2187, "to": 2673}, {"arrows": "to", "from": 2187, "to": 2349}, {"arrows": "to", "from": 2187, "to": 2241}, {"arrows": "to", "from": 2187, "to": 2205}, {"arrows": "to", "from": 2187, "to": 2193}, {"arrows": "to", "from": 2187, "to": 2189}, {"arrows": "to", "from": 15309, "to": 16038}, {"arrows": "to", "from": 15309, "to": 15552}, {"arrows": "to", "from": 15309, "to": 15390}, {"arrows": "to", "from": 15309, "to": 15336}, {"arrows": "to", "from": 15309, "to": 15318}, {"arrows": "to", "from": 15309, "to": 15312}, {"arrows": "to", "from": 15309, "to": 15310}, {"arrows": "to", "from": 3645, "to": 10206}, {"arrows": "to", "from": 3645, "to": 3888}, {"arrows": "to", "from": 3645, "to": 3726}, {"arrows": "to", "from": 3645, "to": 3672}, {"arrows": "to", "from": 3645, "to": 3654}, {"arrows": "to", "from": 3645, "to": 3648}, {"arrows": "to", "from": 3645, "to": 3646}, {"arrows": "to", "from": 2673, "to": 9234}, {"arrows": "to", "from": 2673, "to": 3402}, {"arrows": "to", "from": 2673, "to": 2754}, {"arrows": "to", "from": 2673, "to": 2700}, {"arrows": "to", "from": 2673, "to": 2682}, {"arrows": "to", "from": 2673, "to": 2676}, {"arrows": "to", "from": 2673, "to": 2674}, {"arrows": "to", "from": 2349, "to": 8910}, {"arrows": "to", "from": 2349, "to": 3078}, {"arrows": "to", "from": 2349, "to": 2592}, {"arrows": "to", "from": 2349, "to": 2376}, {"arrows": "to", "from": 2349, "to": 2358}, {"arrows": "to", "from": 2349, "to": 2352}, {"arrows": "to", "from": 2349, "to": 2350}, {"arrows": "to", "from": 2241, "to": 8802}, {"arrows": "to", "from": 2241, "to": 2970}, {"arrows": "to", "from": 2241, "to": 2484}, {"arrows": "to", "from": 2241, "to": 2322}, {"arrows": "to", "from": 2241, "to": 2250}, {"arrows": "to", "from": 2241, "to": 2244}, {"arrows": "to", "from": 2241, "to": 2242}, {"arrows": "to", "from": 2205, "to": 8766}, {"arrows": "to", "from": 2205, "to": 2934}, {"arrows": "to", "from": 2205, "to": 2448}, {"arrows": "to", "from": 2205, "to": 2286}, {"arrows": "to", "from": 2205, "to": 2232}, {"arrows": "to", "from": 2205, "to": 2208}, {"arrows": "to", "from": 2205, "to": 2206}, {"arrows": "to", "from": 2193, "to": 8754}, {"arrows": "to", "from": 2193, "to": 2922}, {"arrows": "to", "from": 2193, "to": 2436}, {"arrows": "to", "from": 2193, "to": 2274}, {"arrows": "to", "from": 2193, "to": 2220}, {"arrows": "to", "from": 2193, "to": 2202}, {"arrows": "to", "from": 2193, "to": 2194}, {"arrows": "to", "from": 2189, "to": 8750}, {"arrows": "to", "from": 2189, "to": 2918}, {"arrows": "to", "from": 2189, "to": 2432}, {"arrows": "to", "from": 2189, "to": 2270}, {"arrows": "to", "from": 2189, "to": 2216}, {"arrows": "to", "from": 2189, "to": 2198}, {"arrows": "to", "from": 2189, "to": 2192}, {"arrows": "to", "from": 729, "to": 13851}, {"arrows": "to", "from": 729, "to": 5103}, {"arrows": "to", "from": 729, "to": 1215}, {"arrows": "to", "from": 729, "to": 891}, {"arrows": "to", "from": 729, "to": 783}, {"arrows": "to", "from": 729, "to": 747}, {"arrows": "to", "from": 729, "to": 735}, {"arrows": "to", "from": 729, "to": 731}, {"arrows": "to", "from": 13851, "to": 16038}, {"arrows": "to", "from": 13851, "to": 14094}, {"arrows": "to", "from": 13851, "to": 13932}, {"arrows": "to", "from": 13851, "to": 13878}, {"arrows": "to", "from": 13851, "to": 13860}, {"arrows": "to", "from": 13851, "to": 13854}, {"arrows": "to", "from": 13851, "to": 13852}, {"arrows": "to", "from": 5103, "to": 11664}, {"arrows": "to", "from": 5103, "to": 5346}, {"arrows": "to", "from": 5103, "to": 5184}, {"arrows": "to", "from": 5103, "to": 5130}, {"arrows": "to", "from": 5103, "to": 5112}, {"arrows": "to", "from": 5103, "to": 5106}, {"arrows": "to", "from": 5103, "to": 5104}, {"arrows": "to", "from": 1215, "to": 7776}, {"arrows": "to", "from": 1215, "to": 3402}, {"arrows": "to", "from": 1215, "to": 1296}, {"arrows": "to", "from": 1215, "to": 1242}, {"arrows": "to", "from": 1215, "to": 1224}, {"arrows": "to", "from": 1215, "to": 1218}, {"arrows": "to", "from": 1215, "to": 1216}, {"arrows": "to", "from": 891, "to": 7452}, {"arrows": "to", "from": 891, "to": 3078}, {"arrows": "to", "from": 891, "to": 1134}, {"arrows": "to", "from": 891, "to": 918}, {"arrows": "to", "from": 891, "to": 900}, {"arrows": "to", "from": 891, "to": 894}, {"arrows": "to", "from": 891, "to": 892}, {"arrows": "to", "from": 783, "to": 7344}, {"arrows": "to", "from": 783, "to": 2970}, {"arrows": "to", "from": 783, "to": 1026}, {"arrows": "to", "from": 783, "to": 864}, {"arrows": "to", "from": 783, "to": 792}, {"arrows": "to", "from": 783, "to": 786}, {"arrows": "to", "from": 783, "to": 784}, {"arrows": "to", "from": 747, "to": 7308}, {"arrows": "to", "from": 747, "to": 2934}, {"arrows": "to", "from": 747, "to": 990}, {"arrows": "to", "from": 747, "to": 828}, {"arrows": "to", "from": 747, "to": 774}, {"arrows": "to", "from": 747, "to": 750}, {"arrows": "to", "from": 747, "to": 748}, {"arrows": "to", "from": 735, "to": 7296}, {"arrows": "to", "from": 735, "to": 2922}, {"arrows": "to", "from": 735, "to": 978}, {"arrows": "to", "from": 735, "to": 816}, {"arrows": "to", "from": 735, "to": 762}, {"arrows": "to", "from": 735, "to": 744}, {"arrows": "to", "from": 735, "to": 736}, {"arrows": "to", "from": 731, "to": 7292}, {"arrows": "to", "from": 731, "to": 2918}, {"arrows": "to", "from": 731, "to": 974}, {"arrows": "to", "from": 731, "to": 812}, {"arrows": "to", "from": 731, "to": 758}, {"arrows": "to", "from": 731, "to": 740}, {"arrows": "to", "from": 731, "to": 734}, {"arrows": "to", "from": 243, "to": 13365}, {"arrows": "to", "from": 243, "to": 4617}, {"arrows": "to", "from": 243, "to": 1701}, {"arrows": "to", "from": 243, "to": 405}, {"arrows": "to", "from": 243, "to": 297}, {"arrows": "to", "from": 243, "to": 261}, {"arrows": "to", "from": 243, "to": 249}, {"arrows": "to", "from": 243, "to": 245}, {"arrows": "to", "from": 13365, "to": 15552}, {"arrows": "to", "from": 13365, "to": 14094}, {"arrows": "to", "from": 13365, "to": 13446}, {"arrows": "to", "from": 13365, "to": 13392}, {"arrows": "to", "from": 13365, "to": 13374}, {"arrows": "to", "from": 13365, "to": 13368}, {"arrows": "to", "from": 13365, "to": 13366}, {"arrows": "to", "from": 4617, "to": 11178}, {"arrows": "to", "from": 4617, "to": 5346}, {"arrows": "to", "from": 4617, "to": 4698}, {"arrows": "to", "from": 4617, "to": 4644}, {"arrows": "to", "from": 4617, "to": 4626}, {"arrows": "to", "from": 4617, "to": 4620}, {"arrows": "to", "from": 4617, "to": 4618}, {"arrows": "to", "from": 1701, "to": 8262}, {"arrows": "to", "from": 1701, "to": 3888}, {"arrows": "to", "from": 1701, "to": 1782}, {"arrows": "to", "from": 1701, "to": 1728}, {"arrows": "to", "from": 1701, "to": 1710}, {"arrows": "to", "from": 1701, "to": 1704}, {"arrows": "to", "from": 1701, "to": 1702}, {"arrows": "to", "from": 405, "to": 6966}, {"arrows": "to", "from": 405, "to": 2592}, {"arrows": "to", "from": 405, "to": 1134}, {"arrows": "to", "from": 405, "to": 432}, {"arrows": "to", "from": 405, "to": 414}, {"arrows": "to", "from": 405, "to": 408}, {"arrows": "to", "from": 405, "to": 406}, {"arrows": "to", "from": 297, "to": 6858}, {"arrows": "to", "from": 297, "to": 2484}, {"arrows": "to", "from": 297, "to": 1026}, {"arrows": "to", "from": 297, "to": 378}, {"arrows": "to", "from": 297, "to": 306}, {"arrows": "to", "from": 297, "to": 300}, {"arrows": "to", "from": 297, "to": 298}, {"arrows": "to", "from": 261, "to": 6822}, {"arrows": "to", "from": 261, "to": 2448}, {"arrows": "to", "from": 261, "to": 990}, {"arrows": "to", "from": 261, "to": 342}, {"arrows": "to", "from": 261, "to": 288}, {"arrows": "to", "from": 261, "to": 264}, {"arrows": "to", "from": 261, "to": 262}, {"arrows": "to", "from": 249, "to": 6810}, {"arrows": "to", "from": 249, "to": 2436}, {"arrows": "to", "from": 249, "to": 978}, {"arrows": "to", "from": 249, "to": 330}, {"arrows": "to", "from": 249, "to": 276}, {"arrows": "to", "from": 249, "to": 258}, {"arrows": "to", "from": 249, "to": 250}, {"arrows": "to", "from": 245, "to": 6806}, {"arrows": "to", "from": 245, "to": 2432}, {"arrows": "to", "from": 245, "to": 974}, {"arrows": "to", "from": 245, "to": 326}, {"arrows": "to", "from": 245, "to": 272}, {"arrows": "to", "from": 245, "to": 254}, {"arrows": "to", "from": 245, "to": 248}, {"arrows": "to", "from": 81, "to": 13203}, {"arrows": "to", "from": 81, "to": 4455}, {"arrows": "to", "from": 81, "to": 1539}, {"arrows": "to", "from": 81, "to": 567}, {"arrows": "to", "from": 81, "to": 135}, {"arrows": "to", "from": 81, "to": 99}, {"arrows": "to", "from": 81, "to": 87}, {"arrows": "to", "from": 81, "to": 83}, {"arrows": "to", "from": 13203, "to": 15390}, {"arrows": "to", "from": 13203, "to": 13932}, {"arrows": "to", "from": 13203, "to": 13446}, {"arrows": "to", "from": 13203, "to": 13230}, {"arrows": "to", "from": 13203, "to": 13212}, {"arrows": "to", "from": 13203, "to": 13206}, {"arrows": "to", "from": 13203, "to": 13204}, {"arrows": "to", "from": 4455, "to": 11016}, {"arrows": "to", "from": 4455, "to": 5184}, {"arrows": "to", "from": 4455, "to": 4698}, {"arrows": "to", "from": 4455, "to": 4482}, {"arrows": "to", "from": 4455, "to": 4464}, {"arrows": "to", "from": 4455, "to": 4458}, {"arrows": "to", "from": 4455, "to": 4456}, {"arrows": "to", "from": 1539, "to": 8100}, {"arrows": "to", "from": 1539, "to": 3726}, {"arrows": "to", "from": 1539, "to": 1782}, {"arrows": "to", "from": 1539, "to": 1566}, {"arrows": "to", "from": 1539, "to": 1548}, {"arrows": "to", "from": 1539, "to": 1542}, {"arrows": "to", "from": 1539, "to": 1540}, {"arrows": "to", "from": 567, "to": 7128}, {"arrows": "to", "from": 567, "to": 2754}, {"arrows": "to", "from": 567, "to": 1296}, {"arrows": "to", "from": 567, "to": 594}, {"arrows": "to", "from": 567, "to": 576}, {"arrows": "to", "from": 567, "to": 570}, {"arrows": "to", "from": 567, "to": 568}, {"arrows": "to", "from": 135, "to": 6696}, {"arrows": "to", "from": 135, "to": 2322}, {"arrows": "to", "from": 135, "to": 864}, {"arrows": "to", "from": 135, "to": 378}, {"arrows": "to", "from": 135, "to": 144}, {"arrows": "to", "from": 135, "to": 138}, {"arrows": "to", "from": 135, "to": 136}, {"arrows": "to", "from": 99, "to": 6660}, {"arrows": "to", "from": 99, "to": 2286}, {"arrows": "to", "from": 99, "to": 828}, {"arrows": "to", "from": 99, "to": 342}, {"arrows": "to", "from": 99, "to": 126}, {"arrows": "to", "from": 99, "to": 102}, {"arrows": "to", "from": 99, "to": 100}, {"arrows": "to", "from": 87, "to": 6648}, {"arrows": "to", "from": 87, "to": 2274}, {"arrows": "to", "from": 87, "to": 816}, {"arrows": "to", "from": 87, "to": 330}, {"arrows": "to", "from": 87, "to": 114}, {"arrows": "to", "from": 87, "to": 96}, {"arrows": "to", "from": 87, "to": 88}, {"arrows": "to", "from": 83, "to": 6644}, {"arrows": "to", "from": 83, "to": 2270}, {"arrows": "to", "from": 83, "to": 812}, {"arrows": "to", "from": 83, "to": 326}, {"arrows": "to", "from": 83, "to": 110}, {"arrows": "to", "from": 83, "to": 92}, {"arrows": "to", "from": 83, "to": 86}, {"arrows": "to", "from": 27, "to": 13149}, {"arrows": "to", "from": 27, "to": 4401}, {"arrows": "to", "from": 27, "to": 1485}, {"arrows": "to", "from": 27, "to": 513}, {"arrows": "to", "from": 27, "to": 189}, {"arrows": "to", "from": 27, "to": 45}, {"arrows": "to", "from": 27, "to": 33}, {"arrows": "to", "from": 27, "to": 29}, {"arrows": "to", "from": 13149, "to": 15336}, {"arrows": "to", "from": 13149, "to": 13878}, {"arrows": "to", "from": 13149, "to": 13392}, {"arrows": "to", "from": 13149, "to": 13230}, {"arrows": "to", "from": 13149, "to": 13158}, {"arrows": "to", "from": 13149, "to": 13152}, {"arrows": "to", "from": 13149, "to": 13150}, {"arrows": "to", "from": 4401, "to": 10962}, {"arrows": "to", "from": 4401, "to": 5130}, {"arrows": "to", "from": 4401, "to": 4644}, {"arrows": "to", "from": 4401, "to": 4482}, {"arrows": "to", "from": 4401, "to": 4410}, {"arrows": "to", "from": 4401, "to": 4404}, {"arrows": "to", "from": 4401, "to": 4402}, {"arrows": "to", "from": 1485, "to": 8046}, {"arrows": "to", "from": 1485, "to": 3672}, {"arrows": "to", "from": 1485, "to": 1728}, {"arrows": "to", "from": 1485, "to": 1566}, {"arrows": "to", "from": 1485, "to": 1494}, {"arrows": "to", "from": 1485, "to": 1488}, {"arrows": "to", "from": 1485, "to": 1486}, {"arrows": "to", "from": 513, "to": 7074}, {"arrows": "to", "from": 513, "to": 2700}, {"arrows": "to", "from": 513, "to": 1242}, {"arrows": "to", "from": 513, "to": 594}, {"arrows": "to", "from": 513, "to": 522}, {"arrows": "to", "from": 513, "to": 516}, {"arrows": "to", "from": 513, "to": 514}, {"arrows": "to", "from": 189, "to": 6750}, {"arrows": "to", "from": 189, "to": 2376}, {"arrows": "to", "from": 189, "to": 918}, {"arrows": "to", "from": 189, "to": 432}, {"arrows": "to", "from": 189, "to": 198}, {"arrows": "to", "from": 189, "to": 192}, {"arrows": "to", "from": 189, "to": 190}, {"arrows": "to", "from": 45, "to": 6606}, {"arrows": "to", "from": 45, "to": 2232}, {"arrows": "to", "from": 45, "to": 774}, {"arrows": "to", "from": 45, "to": 288}, {"arrows": "to", "from": 45, "to": 126}, {"arrows": "to", "from": 45, "to": 48}, {"arrows": "to", "from": 45, "to": 46}, {"arrows": "to", "from": 33, "to": 6594}, {"arrows": "to", "from": 33, "to": 2220}, {"arrows": "to", "from": 33, "to": 762}, {"arrows": "to", "from": 33, "to": 276}, {"arrows": "to", "from": 33, "to": 114}, {"arrows": "to", "from": 33, "to": 42}, {"arrows": "to", "from": 33, "to": 34}, {"arrows": "to", "from": 29, "to": 6590}, {"arrows": "to", "from": 29, "to": 2216}, {"arrows": "to", "from": 29, "to": 758}, {"arrows": "to", "from": 29, "to": 272}, {"arrows": "to", "from": 29, "to": 110}, {"arrows": "to", "from": 29, "to": 38}, {"arrows": "to", "from": 29, "to": 32}, {"arrows": "to", "from": 9, "to": 13131}, {"arrows": "to", "from": 9, "to": 4383}, {"arrows": "to", "from": 9, "to": 1467}, {"arrows": "to", "from": 9, "to": 495}, {"arrows": "to", "from": 9, "to": 171}, {"arrows": "to", "from": 9, "to": 63}, {"arrows": "to", "from": 9, "to": 15}, {"arrows": "to", "from": 9, "to": 11}, {"arrows": "to", "from": 13131, "to": 15318}, {"arrows": "to", "from": 13131, "to": 13860}, {"arrows": "to", "from": 13131, "to": 13374}, {"arrows": "to", "from": 13131, "to": 13212}, {"arrows": "to", "from": 13131, "to": 13158}, {"arrows": "to", "from": 13131, "to": 13134}, {"arrows": "to", "from": 13131, "to": 13132}, {"arrows": "to", "from": 4383, "to": 10944}, {"arrows": "to", "from": 4383, "to": 5112}, {"arrows": "to", "from": 4383, "to": 4626}, {"arrows": "to", "from": 4383, "to": 4464}, {"arrows": "to", "from": 4383, "to": 4410}, {"arrows": "to", "from": 4383, "to": 4386}, {"arrows": "to", "from": 4383, "to": 4384}, {"arrows": "to", "from": 1467, "to": 8028}, {"arrows": "to", "from": 1467, "to": 3654}, {"arrows": "to", "from": 1467, "to": 1710}, {"arrows": "to", "from": 1467, "to": 1548}, {"arrows": "to", "from": 1467, "to": 1494}, {"arrows": "to", "from": 1467, "to": 1470}, {"arrows": "to", "from": 1467, "to": 1468}, {"arrows": "to", "from": 495, "to": 7056}, {"arrows": "to", "from": 495, "to": 2682}, {"arrows": "to", "from": 495, "to": 1224}, {"arrows": "to", "from": 495, "to": 576}, {"arrows": "to", "from": 495, "to": 522}, {"arrows": "to", "from": 495, "to": 498}, {"arrows": "to", "from": 495, "to": 496}, {"arrows": "to", "from": 171, "to": 6732}, {"arrows": "to", "from": 171, "to": 2358}, {"arrows": "to", "from": 171, "to": 900}, {"arrows": "to", "from": 171, "to": 414}, {"arrows": "to", "from": 171, "to": 198}, {"arrows": "to", "from": 171, "to": 174}, {"arrows": "to", "from": 171, "to": 172}, {"arrows": "to", "from": 63, "to": 6624}, {"arrows": "to", "from": 63, "to": 2250}, {"arrows": "to", "from": 63, "to": 792}, {"arrows": "to", "from": 63, "to": 306}, {"arrows": "to", "from": 63, "to": 144}, {"arrows": "to", "from": 63, "to": 66}, {"arrows": "to", "from": 63, "to": 64}, {"arrows": "to", "from": 15, "to": 6576}, {"arrows": "to", "from": 15, "to": 2202}, {"arrows": "to", "from": 15, "to": 744}, {"arrows": "to", "from": 15, "to": 258}, {"arrows": "to", "from": 15, "to": 96}, {"arrows": "to", "from": 15, "to": 42}, {"arrows": "to", "from": 15, "to": 16}, {"arrows": "to", "from": 11, "to": 6572}, {"arrows": "to", "from": 11, "to": 2198}, {"arrows": "to", "from": 11, "to": 740}, {"arrows": "to", "from": 11, "to": 254}, {"arrows": "to", "from": 11, "to": 92}, {"arrows": "to", "from": 11, "to": 38}, {"arrows": "to", "from": 11, "to": 14}, {"arrows": "to", "from": 3, "to": 13125}, {"arrows": "to", "from": 3, "to": 4377}, {"arrows": "to", "from": 3, "to": 1461}, {"arrows": "to", "from": 3, "to": 489}, {"arrows": "to", "from": 3, "to": 165}, {"arrows": "to", "from": 3, "to": 57}, {"arrows": "to", "from": 3, "to": 21}, {"arrows": "to", "from": 3, "to": 5}, {"arrows": "to", "from": 13125, "to": 15312}, {"arrows": "to", "from": 13125, "to": 13854}, {"arrows": "to", "from": 13125, "to": 13368}, {"arrows": "to", "from": 13125, "to": 13206}, {"arrows": "to", "from": 13125, "to": 13152}, {"arrows": "to", "from": 13125, "to": 13134}, {"arrows": "to", "from": 13125, "to": 13126}, {"arrows": "to", "from": 4377, "to": 10938}, {"arrows": "to", "from": 4377, "to": 5106}, {"arrows": "to", "from": 4377, "to": 4620}, {"arrows": "to", "from": 4377, "to": 4458}, {"arrows": "to", "from": 4377, "to": 4404}, {"arrows": "to", "from": 4377, "to": 4386}, {"arrows": "to", "from": 4377, "to": 4378}, {"arrows": "to", "from": 1461, "to": 8022}, {"arrows": "to", "from": 1461, "to": 3648}, {"arrows": "to", "from": 1461, "to": 1704}, {"arrows": "to", "from": 1461, "to": 1542}, {"arrows": "to", "from": 1461, "to": 1488}, {"arrows": "to", "from": 1461, "to": 1470}, {"arrows": "to", "from": 1461, "to": 1462}, {"arrows": "to", "from": 489, "to": 7050}, {"arrows": "to", "from": 489, "to": 2676}, {"arrows": "to", "from": 489, "to": 1218}, {"arrows": "to", "from": 489, "to": 570}, {"arrows": "to", "from": 489, "to": 516}, {"arrows": "to", "from": 489, "to": 498}, {"arrows": "to", "from": 489, "to": 490}, {"arrows": "to", "from": 165, "to": 6726}, {"arrows": "to", "from": 165, "to": 2352}, {"arrows": "to", "from": 165, "to": 894}, {"arrows": "to", "from": 165, "to": 408}, {"arrows": "to", "from": 165, "to": 192}, {"arrows": "to", "from": 165, "to": 174}, {"arrows": "to", "from": 165, "to": 166}, {"arrows": "to", "from": 57, "to": 6618}, {"arrows": "to", "from": 57, "to": 2244}, {"arrows": "to", "from": 57, "to": 786}, {"arrows": "to", "from": 57, "to": 300}, {"arrows": "to", "from": 57, "to": 138}, {"arrows": "to", "from": 57, "to": 66}, {"arrows": "to", "from": 57, "to": 58}, {"arrows": "to", "from": 21, "to": 6582}, {"arrows": "to", "from": 21, "to": 2208}, {"arrows": "to", "from": 21, "to": 750}, {"arrows": "to", "from": 21, "to": 264}, {"arrows": "to", "from": 21, "to": 102}, {"arrows": "to", "from": 21, "to": 48}, {"arrows": "to", "from": 21, "to": 22}, {"arrows": "to", "from": 5, "to": 6566}, {"arrows": "to", "from": 5, "to": 2192}, {"arrows": "to", "from": 5, "to": 734}, {"arrows": "to", "from": 5, "to": 248}, {"arrows": "to", "from": 5, "to": 86}, {"arrows": "to", "from": 5, "to": 32}, {"arrows": "to", "from": 5, "to": 14}, {"arrows": "to", "from": 1, "to": 13123}, {"arrows": "to", "from": 1, "to": 4375}, {"arrows": "to", "from": 1, "to": 1459}, {"arrows": "to", "from": 1, "to": 487}, {"arrows": "to", "from": 1, "to": 163}, {"arrows": "to", "from": 1, "to": 55}, {"arrows": "to", "from": 1, "to": 19}, {"arrows": "to", "from": 1, "to": 7}, {"arrows": "to", "from": 13123, "to": 15310}, {"arrows": "to", "from": 13123, "to": 13852}, {"arrows": "to", "from": 13123, "to": 13366}, {"arrows": "to", "from": 13123, "to": 13204}, {"arrows": "to", "from": 13123, "to": 13150}, {"arrows": "to", "from": 13123, "to": 13132}, {"arrows": "to", "from": 13123, "to": 13126}, {"arrows": "to", "from": 4375, "to": 10936}, {"arrows": "to", "from": 4375, "to": 5104}, {"arrows": "to", "from": 4375, "to": 4618}, {"arrows": "to", "from": 4375, "to": 4456}, {"arrows": "to", "from": 4375, "to": 4402}, {"arrows": "to", "from": 4375, "to": 4384}, {"arrows": "to", "from": 4375, "to": 4378}, {"arrows": "to", "from": 1459, "to": 8020}, {"arrows": "to", "from": 1459, "to": 3646}, {"arrows": "to", "from": 1459, "to": 1702}, {"arrows": "to", "from": 1459, "to": 1540}, {"arrows": "to", "from": 1459, "to": 1486}, {"arrows": "to", "from": 1459, "to": 1468}, {"arrows": "to", "from": 1459, "to": 1462}, {"arrows": "to", "from": 487, "to": 7048}, {"arrows": "to", "from": 487, "to": 2674}, {"arrows": "to", "from": 487, "to": 1216}, {"arrows": "to", "from": 487, "to": 568}, {"arrows": "to", "from": 487, "to": 514}, {"arrows": "to", "from": 487, "to": 496}, {"arrows": "to", "from": 487, "to": 490}, {"arrows": "to", "from": 163, "to": 6724}, {"arrows": "to", "from": 163, "to": 2350}, {"arrows": "to", "from": 163, "to": 892}, {"arrows": "to", "from": 163, "to": 406}, {"arrows": "to", "from": 163, "to": 190}, {"arrows": "to", "from": 163, "to": 172}, {"arrows": "to", "from": 163, "to": 166}, {"arrows": "to", "from": 55, "to": 6616}, {"arrows": "to", "from": 55, "to": 2242}, {"arrows": "to", "from": 55, "to": 784}, {"arrows": "to", "from": 55, "to": 298}, {"arrows": "to", "from": 55, "to": 136}, {"arrows": "to", "from": 55, "to": 64}, {"arrows": "to", "from": 55, "to": 58}, {"arrows": "to", "from": 19, "to": 6580}, {"arrows": "to", "from": 19, "to": 2206}, {"arrows": "to", "from": 19, "to": 748}, {"arrows": "to", "from": 19, "to": 262}, {"arrows": "to", "from": 19, "to": 100}, {"arrows": "to", "from": 19, "to": 46}, {"arrows": "to", "from": 19, "to": 22}, {"arrows": "to", "from": 7, "to": 6568}, {"arrows": "to", "from": 7, "to": 2194}, {"arrows": "to", "from": 7, "to": 736}, {"arrows": "to", "from": 7, "to": 250}, {"arrows": "to", "from": 7, "to": 88}, {"arrows": "to", "from": 7, "to": 34}, {"arrows": "to", "from": 7, "to": 16}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

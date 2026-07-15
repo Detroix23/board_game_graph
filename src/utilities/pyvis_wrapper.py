@@ -4,10 +4,12 @@
 
 Draw graphs with `pyvis`.
 """
+import pathlib
+
 import pyvis  # pyright: ignore[reportMissingTypeStubs]
 
 from utilities import graphics
-from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS
+from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS, PATH_PYVIS
 from tic_tac_toe_detroix23 import configurations, conditions, graphs, ui
 
 class GraphDrawer:
@@ -52,7 +54,8 @@ class GraphDrawer:
             width="100vw",
             directed=True,
             notebook=False,
-            select_menu=True,       
+            select_menu=True,      
+            cdn_resources="remote", 
         )
 
         self.populate()
@@ -125,11 +128,13 @@ class GraphDrawer:
         """
         Draw a with `pyvis` the `graph`.
         """
+        path: pathlib.Path = PATH_PYVIS / f"ttt_{self.name}.html"
+        print(str(path))
+
         self.network.toggle_physics(True)  # pyright: ignore[reportUnknownMemberType]
         self.network.show_buttons()         # pyright: ignore[reportUnknownMemberType]
         self.network.show(                  # pyright: ignore[reportUnknownMemberType]
-            name=f"ttt_{self.name}.html",
-            local=True,
+            name=str(path),
             notebook=False,
         )
 

@@ -2,6 +2,7 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/cli.py
 """
+import enum
 from typing import Final, TypeVar, Type
 
 from utilities import graphviz_wrapper, pyvis_wrapper
@@ -24,7 +25,11 @@ def get_input(
     """
     Get user input and returns converted to `_T_INPUT`.
     """
-    user_input: str = input(f"{message} [{input_type.__name__}]({default}): ")
+    options: str = input_type.__name__
+    if issubclass(input_type, enum.Enum):
+        options = " | ".join(input_type.__members__.keys()) 
+
+    user_input: str = input(f"{message} [{options}]({default}): ")
     output: _T_INPUT
 
     if not user_input:
@@ -34,8 +39,12 @@ def get_input(
         try:
             output = input_type(user_input)  # pyright: ignore[reportCallIssue]
         
-        except TypeError:
-            output = default
+        except TypeError or ValueError:
+            try:
+                output = input_type[user_input.upper()]  # type: ignore
+
+            except TypeError or ValueError:
+                output = default
     
     print(f"=> `{output}`")
     return output
@@ -69,7 +78,9 @@ def draw_graph() -> None:
     """
     Input loop to create a graph from an interactive CLI.
     """
-    print("## Custom graph.\n")
+    print("## Custom graph.")
+    print("Inputs [options](default).")
+    print()
 
     try:    
         player_count: int = get_input(int, "Player count", 2)
@@ -81,17 +92,24 @@ def draw_graph() -> None:
         win_length: int = get_input(int, "Aligned length to win", 3)
         enable_draw: bool = input("Enable draw ? [y | n](y):").lower() in {"", "y", "ye", "yes"}
         print(f"=> `{enable_draw}`")
-        file_format: FileFormat = FileFormat.SVG
-        layout_engine: LayoutEngine = LayoutEngine.PYVIS
+        layout_engine: LayoutEngine = get_input(LayoutEngine, "Graphical engine", LayoutEngine.PYVIS)
 
-        print(f"""Global parameters:
+        file_format: FileFormat
+        if layout_engine not in {LayoutEngine.PYVIS}:
+            file_format = get_input(FileFormat, "File format", FileFormat.SVG)
+        else:
+            file_format = FileFormat.SVG
+
+
+        print(f"""
+Global parameters:
   - player_count={player_count};
   - player_start={player_start};
   - size={size};
   - win_length={win_length};
   - file_format={file_format};
   - layout_engine={layout_engine};
-    """)
+        """)
 
         while True:
             print("\n### Graph settings [constraint](default).")
