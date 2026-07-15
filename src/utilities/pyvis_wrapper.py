@@ -102,10 +102,7 @@ class GraphDrawer:
                     player_symbols=player_symbols,
                 ),
                 color="#"+graphics.hsv_to_rgb_hex(
-                    (
-                        ((state.depth + self.player_start - 1) % self.player_count) 
-                        / self.player_count
-                    ), 
+                    state.player / self.player_count, 
                     0.9, 
                     0.9,
                 ),

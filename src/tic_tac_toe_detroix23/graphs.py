@@ -27,6 +27,7 @@ class NodeState:
     """
     node: int
     depth: int
+    player: int
     win_state: int
     forced_wins: dict[int, int]
     neighbors: Optional[ImageList]
@@ -40,6 +41,7 @@ class NodeState:
         self,
         node: int,
         depth: int,
+        player: int,
         win_state: int,
         neighbors: Optional[ImageList],
     ) -> None:
@@ -53,6 +55,7 @@ class NodeState:
         """
         self.node = node
         self.depth = depth
+        self.player = player
         self.win_state = win_state
         self.forced_wins = dict()
         self.neighbors = neighbors
@@ -69,25 +72,23 @@ def is_leaf(
     """
     return len(graph.get(node, [])) == 0
 
-def set_win_state(
+def determine_win_state(
     graph: Graph,
     node: int,
-    player: int,
     win_conditions: WinConditions
 ) -> int:
     """
-    Returns an `int` corresponding to the `win_state` of `node` in `graph`:
+    Returns an `int` corresponding to 
+    the `win_state` of `node` in `graph`:
     - `0`: game ending with a tie;
     - `> 0`: winning player's ID;
     - `-1`: else.
     """
-    state: int = -1
-    if win_conditions.is_win(node):
-        state = player
-    elif is_leaf(graph, node):
-        state = 0
-
-    return state
+    return (
+        win_conditions.get_winner(node)
+        if not is_leaf(graph, node)
+        else 0
+    )
 
 def indexing(
     graph: Graph,
@@ -103,17 +104,17 @@ def indexing(
     - depth: `int`;
     - win_state: `int`. 
     """
-    node_start_win_state: int = set_win_state(
+    node_start_win_state: int = determine_win_state(
         graph,
         node_start,
-        player_start,
-        win_conditions
+        win_conditions,
     )
 
     visited: set[int] = set()
     queue: list[NodeState] = [NodeState(
         node_start, 
         depth_start, 
+        player_start,
         node_start_win_state,
         graph[node_start],
     )]
@@ -126,6 +127,7 @@ def indexing(
             index[state.node] = (NodeState(
                 state.node, 
                 state.depth,
+                state.player,
                 state.win_state,
                 (
                     graph[state.node]
@@ -142,14 +144,15 @@ def indexing(
                         player_count,
                     )
                     image: int = int(neighbor)
+
                     queue.append(NodeState(
                         image, 
                         state.depth + 1,
-                        set_win_state(
+                        player,
+                        determine_win_state(
                             graph,
                             image,
-                            player,
-                            win_conditions
+                            win_conditions,
                         ),
                         (   
                             graph[int(neighbor)]
