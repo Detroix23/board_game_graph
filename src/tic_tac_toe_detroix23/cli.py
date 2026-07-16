@@ -5,11 +5,13 @@
 import enum
 from typing import Final, TypeVar, Type
 
-from utilities import graphviz_wrapper, pyvis_wrapper
+from utilities import graphing, graphviz_wrapper, pyvis_wrapper
 from tic_tac_toe_detroix23.definitions import Board, Graph, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import (
     configurations, plays, conditions, graphs, ui, exports, optimization
 )
+
+EXCEPTIONS: tuple[type[Exception], ...] = (TypeError, ValueError)
 
 HELP: Final[str] = """
 ## Help.
@@ -37,13 +39,13 @@ def get_input(
     
     else:
         try:
-            output = input_type(user_input)  # pyright: ignore[reportCallIssue]
+            output = input_type(user_input)  # type: ignore[call-arg]
         
-        except TypeError or ValueError:
+        except EXCEPTIONS:
             try:
                 output = input_type[user_input.upper()]  # type: ignore
 
-            except TypeError or ValueError:
+            except EXCEPTIONS:
                 output = default
     
     print(f"=> `{output}`")
@@ -199,14 +201,14 @@ Global parameters:
             if enable_draw:
                 print("Index: ")
                 print("- " + "\n- ".join([
-                    f"{node: >5}: {state}" 
-                    for node, state in graph_index.items()
+                    f"{state}" 
+                    for state in graph_index.values()
                 ]))
 
                 print("Dictionary: ")
                 print(ui.format_graph(graph))
 
-                graph_drawer: graphviz_wrapper.GraphDrawer | pyvis_wrapper.GraphDrawer
+                graph_drawer: graphing.GraphDrawer
 
                 if layout_engine == LayoutEngine.PYVIS:
                     graph_drawer = pyvis_wrapper.GraphDrawer(
@@ -235,8 +237,8 @@ Global parameters:
                 
                 graph_drawer.draw()
 
-    except KeyboardInterrupt as interrupt:
-        print(f"\nInterrupted by CTRL+C. Details: \n```\n{interrupt}\n```\n")
+    except KeyboardInterrupt:
+        print(f"\n(?) cli.draw_graph() Interrupted by CTRL+C.")
 
     return
 
@@ -285,14 +287,14 @@ def auto_optimum_plays() -> None:
     )
 
     print()
-
+    
     while not (
         win_conditions.is_win(node) 
         or graphs.is_leaf(graph, node)
     ):
         print(f"- Play {play}.")
 
-        node: int = optimization.next_best_node(
+        node = optimization.next_best_node(
             node,
             graph,
             graph_index,
@@ -300,7 +302,7 @@ def auto_optimum_plays() -> None:
             player_count,
             method=optimization.NextBestNodeMethod.RATIO,
         )
-        board: Board = configurations.reverse_image(
+        board = configurations.reverse_image(
             node,
             player_count + 1,
             size[0] * size[1],

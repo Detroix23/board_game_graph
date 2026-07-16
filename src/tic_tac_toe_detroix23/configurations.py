@@ -59,7 +59,7 @@ def get(
     Get the player ID in the configuration `board` 
     at coordinates (`x`; `y`).
     """
-    return board[size[0] * y + x]
+    return int(board[size[0] * y + x])
 
 def update(
     board: Board,

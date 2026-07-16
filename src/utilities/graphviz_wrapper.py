@@ -6,57 +6,14 @@ Draw graphs with `graphviz`.
 """
 import time
 
-import graphviz  # pyright: ignore[reportMissingTypeStubs]
+import graphviz  # type: ignore[import-untyped]
 
-from utilities import graphics
+from utilities import graphics, graphing
 from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPHVIZ, FileFormat, LayoutEngine
 from tic_tac_toe_detroix23 import conditions, graphs
 
-def draw_basic(
-    name: str, 
-    graph: Graph,
-) -> graphviz.Digraph:
-    """
-    Draw a with `graphviz` the `graph`.
-    Basic: all node are the same.
-    """
-    print(f"(?) graphing.draw(name={name}) Start...")
-    time_start: float = time.perf_counter()
 
-    dot: graphviz.Digraph = graphviz.Digraph(
-        name, 
-        comment="Tic-Tac-Toe.",
-        engine="neato",
-        strict=True,
-        format="svg",
-        graph_attr={
-            "splines": "true",
-            "overlap": "false"
-        },
-    )
-
-    for node in graph:
-        dot.node(str(node))  # pyright: ignore[reportUnknownMemberType]
-    
-    for node, neighbors in graph.items():
-        for neighbor in neighbors:
-            dot.edge(  # pyright: ignore[reportUnknownMemberType]
-                str(node), 
-                str(neighbor)
-            )
-    
-    dot.render(  # pyright: ignore[reportUnknownMemberType]
-        filename=f"ttt_{name}.neato.dot",
-        directory=str(PATH_GRAPHVIZ), 
-        format="svg",
-        view=True,
-    ) 
-
-    time_elapsed: float = time.perf_counter() - time_start
-    print(f"(?) graphing.draw(name={name}) End in {time_elapsed:.2f}s.")
-    return dot
-
-class GraphDrawer:
+class GraphDrawer(graphing.GraphDrawer):
     """
     # Complete `GraphDrawer` with `graphviz`.
     """
@@ -176,7 +133,7 @@ class GraphDrawer:
             view=True,
         ) 
 
-    def draw(self) -> graphviz.Digraph:
+    def draw(self) -> None:
         """
         Draw a with `graphviz` the `graph`.
 
@@ -194,4 +151,48 @@ class GraphDrawer:
 
         time_elapsed: float = time.perf_counter() - time_start
         print(f"(?) graphing.draw(name={self.name}) End in {time_elapsed:.2f}s.")
-        return self.dot
+
+
+def draw_basic(
+    name: str, 
+    graph: Graph,
+) -> graphviz.Digraph:
+    """
+    Draw a with `graphviz` the `graph`.
+    Basic: all node are the same.
+    """
+    print(f"(?) graphing.draw(name={name}) Start...")
+    time_start: float = time.perf_counter()
+
+    dot: graphviz.Digraph = graphviz.Digraph(
+        name, 
+        comment="Tic-Tac-Toe.",
+        engine="neato",
+        strict=True,
+        format="svg",
+        graph_attr={
+            "splines": "true",
+            "overlap": "false"
+        },
+    )
+
+    for node in graph:
+        dot.node(str(node))  # pyright: ignore[reportUnknownMemberType]
+    
+    for node, neighbors in graph.items():
+        for neighbor in neighbors:
+            dot.edge(  # pyright: ignore[reportUnknownMemberType]
+                str(node), 
+                str(neighbor)
+            )
+    
+    dot.render(  # pyright: ignore[reportUnknownMemberType]
+        filename=f"ttt_{name}.neato.dot",
+        directory=str(PATH_GRAPHVIZ), 
+        format="svg",
+        view=True,
+    ) 
+
+    time_elapsed: float = time.perf_counter() - time_start
+    print(f"(?) graphing.draw(name={name}) End in {time_elapsed:.2f}s.")
+    return dot

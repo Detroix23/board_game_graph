@@ -1,0 +1,877 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.0.0-rc.4/css/tom-select.min.css" integrity="sha512-43fHB3GLgZfz8QXl1RPQ8O66oIgv3po9cJ5erMt1c4QISq9dYb195T3vr5ImnJPXuVroKcGBPXBFKETW8jrPNQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.0.0-rc.4/js/tom-select.complete.js" integrity="sha512-jeF9CfnvzDiw9G9xiksVjxR2lib44Gnovvkv+3CgCG6NXCD4gqlA5nDAVW5WjpA+i+/zKsUWV5xNEbW1X/HH0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100vw;
+                 height: 85vh;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100vw;
+                 height: 85vh;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="58">58</option>
+                                
+                                    <option value="6619">6619</option>
+                                
+                                    <option value="2245">2245</option>
+                                
+                                    <option value="787">787</option>
+                                
+                                    <option value="301">301</option>
+                                
+                                    <option value="139">139</option>
+                                
+                                    <option value="67">67</option>
+                                
+                                    <option value="10993">10993</option>
+                                
+                                    <option value="8077">8077</option>
+                                
+                                    <option value="7105">7105</option>
+                                
+                                    <option value="6781">6781</option>
+                                
+                                    <option value="6637">6637</option>
+                                
+                                    <option value="15367">15367</option>
+                                
+                                    <option value="3703">3703</option>
+                                
+                                    <option value="2731">2731</option>
+                                
+                                    <option value="2407">2407</option>
+                                
+                                    <option value="2263">2263</option>
+                                
+                                    <option value="13909">13909</option>
+                                
+                                    <option value="5161">5161</option>
+                                
+                                    <option value="1273">1273</option>
+                                
+                                    <option value="949">949</option>
+                                
+                                    <option value="805">805</option>
+                                
+                                    <option value="13423">13423</option>
+                                
+                                    <option value="4675">4675</option>
+                                
+                                    <option value="1759">1759</option>
+                                
+                                    <option value="463">463</option>
+                                
+                                    <option value="319">319</option>
+                                
+                                    <option value="13261">13261</option>
+                                
+                                    <option value="4513">4513</option>
+                                
+                                    <option value="1597">1597</option>
+                                
+                                    <option value="625">625</option>
+                                
+                                    <option value="157">157</option>
+                                
+                                    <option value="11722">11722</option>
+                                
+                                    <option value="11236">11236</option>
+                                
+                                    <option value="11074">11074</option>
+                                
+                                    <option value="11002">11002</option>
+                                
+                                    <option value="10264">10264</option>
+                                
+                                    <option value="8320">8320</option>
+                                
+                                    <option value="8158">8158</option>
+                                
+                                    <option value="8086">8086</option>
+                                
+                                    <option value="9292">9292</option>
+                                
+                                    <option value="7834">7834</option>
+                                
+                                    <option value="7186">7186</option>
+                                
+                                    <option value="7114">7114</option>
+                                
+                                    <option value="8968">8968</option>
+                                
+                                    <option value="7510">7510</option>
+                                
+                                    <option value="7024">7024</option>
+                                
+                                    <option value="6790">6790</option>
+                                
+                                    <option value="8824">8824</option>
+                                
+                                    <option value="7366">7366</option>
+                                
+                                    <option value="6880">6880</option>
+                                
+                                    <option value="6718">6718</option>
+                                
+                                    <option value="16096">16096</option>
+                                
+                                    <option value="15610">15610</option>
+                                
+                                    <option value="15448">15448</option>
+                                
+                                    <option value="15376">15376</option>
+                                
+                                    <option value="3946">3946</option>
+                                
+                                    <option value="3784">3784</option>
+                                
+                                    <option value="3712">3712</option>
+                                
+                                    <option value="3460">3460</option>
+                                
+                                    <option value="2812">2812</option>
+                                
+                                    <option value="2740">2740</option>
+                                
+                                    <option value="3136">3136</option>
+                                
+                                    <option value="2650">2650</option>
+                                
+                                    <option value="2416">2416</option>
+                                
+                                    <option value="2992">2992</option>
+                                
+                                    <option value="2506">2506</option>
+                                
+                                    <option value="2344">2344</option>
+                                
+                                    <option value="14152">14152</option>
+                                
+                                    <option value="13990">13990</option>
+                                
+                                    <option value="13918">13918</option>
+                                
+                                    <option value="5404">5404</option>
+                                
+                                    <option value="5242">5242</option>
+                                
+                                    <option value="5170">5170</option>
+                                
+                                    <option value="1354">1354</option>
+                                
+                                    <option value="1282">1282</option>
+                                
+                                    <option value="1192">1192</option>
+                                
+                                    <option value="958">958</option>
+                                
+                                    <option value="1048">1048</option>
+                                
+                                    <option value="886">886</option>
+                                
+                                    <option value="13504">13504</option>
+                                
+                                    <option value="13432">13432</option>
+                                
+                                    <option value="4756">4756</option>
+                                
+                                    <option value="4684">4684</option>
+                                
+                                    <option value="1840">1840</option>
+                                
+                                    <option value="1768">1768</option>
+                                
+                                    <option value="472">472</option>
+                                
+                                    <option value="400">400</option>
+                                
+                                    <option value="13270">13270</option>
+                                
+                                    <option value="4522">4522</option>
+                                
+                                    <option value="1606">1606</option>
+                                
+                                    <option value="634">634</option>
+                                
+                                    <option value="12208">12208</option>
+                                
+                                    <option value="11884">11884</option>
+                                
+                                    <option value="11740">11740</option>
+                                
+                                    <option value="12694">12694</option>
+                                
+                                    <option value="11398">11398</option>
+                                
+                                    <option value="11254">11254</option>
+                                
+                                    <option value="10750">10750</option>
+                                
+                                    <option value="10426">10426</option>
+                                
+                                    <option value="10282">10282</option>
+                                
+                                    <option value="8482">8482</option>
+                                
+                                    <option value="8338">8338</option>
+                                
+                                    <option value="9454">9454</option>
+                                
+                                    <option value="9310">9310</option>
+                                
+                                    <option value="7996">7996</option>
+                                
+                                    <option value="7852">7852</option>
+                                
+                                    <option value="8986">8986</option>
+                                
+                                    <option value="7528">7528</option>
+                                
+                                    <option value="7042">7042</option>
+                                
+                                    <option value="16582">16582</option>
+                                
+                                    <option value="16258">16258</option>
+                                
+                                    <option value="16114">16114</option>
+                                
+                                    <option value="17068">17068</option>
+                                
+                                    <option value="15772">15772</option>
+                                
+                                    <option value="15628">15628</option>
+                                
+                                    <option value="4108">4108</option>
+                                
+                                    <option value="3964">3964</option>
+                                
+                                    <option value="3622">3622</option>
+                                
+                                    <option value="3478">3478</option>
+                                
+                                    <option value="3154">3154</option>
+                                
+                                    <option value="2668">2668</option>
+                                
+                                    <option value="18526">18526</option>
+                                
+                                    <option value="14314">14314</option>
+                                
+                                    <option value="14170">14170</option>
+                                
+                                    <option value="18364">18364</option>
+                                
+                                    <option value="14476">14476</option>
+                                
+                                    <option value="14008">14008</option>
+                                
+                                    <option value="5566">5566</option>
+                                
+                                    <option value="5422">5422</option>
+                                
+                                    <option value="5728">5728</option>
+                                
+                                    <option value="5260">5260</option>
+                                
+                                    <option value="1372">1372</option>
+                                
+                                    <option value="1210">1210</option>
+                                
+                                    <option value="17878">17878</option>
+                                
+                                    <option value="14962">14962</option>
+                                
+                                    <option value="13522">13522</option>
+                                
+                                    <option value="6214">6214</option>
+                                
+                                    <option value="4774">4774</option>
+                                
+                                    <option value="1858">1858</option>
+                                
+                                    <option value="12289">12289</option>
+                                
+                                    <option value="12217">12217</option>
+                                
+                                    <option value="12127">12127</option>
+                                
+                                    <option value="11893">11893</option>
+                                
+                                    <option value="11983">11983</option>
+                                
+                                    <option value="11821">11821</option>
+                                
+                                    <option value="12775">12775</option>
+                                
+                                    <option value="12703">12703</option>
+                                
+                                    <option value="11407">11407</option>
+                                
+                                    <option value="11335">11335</option>
+                                
+                                    <option value="10831">10831</option>
+                                
+                                    <option value="10759">10759</option>
+                                
+                                    <option value="10669">10669</option>
+                                
+                                    <option value="10435">10435</option>
+                                
+                                    <option value="10525">10525</option>
+                                
+                                    <option value="10363">10363</option>
+                                
+                                    <option value="8491">8491</option>
+                                
+                                    <option value="8419">8419</option>
+                                
+                                    <option value="10039">10039</option>
+                                
+                                    <option value="9391">9391</option>
+                                
+                                    <option value="7933">7933</option>
+                                
+                                    <option value="9715">9715</option>
+                                
+                                    <option value="9229">9229</option>
+                                
+                                    <option value="7771">7771</option>
+                                
+                                    <option value="16663">16663</option>
+                                
+                                    <option value="16591">16591</option>
+                                
+                                    <option value="16501">16501</option>
+                                
+                                    <option value="16267">16267</option>
+                                
+                                    <option value="16357">16357</option>
+                                
+                                    <option value="16195">16195</option>
+                                
+                                    <option value="17149">17149</option>
+                                
+                                    <option value="17077">17077</option>
+                                
+                                    <option value="15781">15781</option>
+                                
+                                    <option value="15709">15709</option>
+                                
+                                    <option value="4117">4117</option>
+                                
+                                    <option value="4045">4045</option>
+                                
+                                    <option value="3559">3559</option>
+                                
+                                    <option value="3397">3397</option>
+                                
+                                    <option value="18607">18607</option>
+                                
+                                    <option value="18535">18535</option>
+                                
+                                    <option value="14323">14323</option>
+                                
+                                    <option value="14251">14251</option>
+                                
+                                    <option value="18373">18373</option>
+                                
+                                    <option value="14485">14485</option>
+                                
+                                    <option value="5575">5575</option>
+                                
+                                    <option value="5503">5503</option>
+                                
+                                    <option value="5737">5737</option>
+                                
+                                    <option value="17887">17887</option>
+                                
+                                    <option value="14971">14971</option>
+                                
+                                    <option value="6223">6223</option>
+                                
+                                    <option value="12145">12145</option>
+                                
+                                    <option value="10687">10687</option>
+                                
+                                    <option value="16519">16519</option>
+                                
+                                    <option value="18625">18625</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#16e5e5", "id": 58, "label": "58", "physics": false, "shape": "star", "size": 360, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 360, "x": 0, "y": 0}, {"color": "#e51616", "id": 6619, "label": "6619", "shape": "dot", "size": 300, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 300}, {"color": "#e51616", "id": 2245, "label": "2245", "shape": "dot", "size": 300, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 300}, {"color": "#e51616", "id": 787, "label": "787", "shape": "dot", "size": 300, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 300}, {"color": "#e51616", "id": 301, "label": "301", "shape": "dot", "size": 300, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 300}, {"color": "#e51616", "id": 139, "label": "139", "shape": "dot", "size": 300, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 300}, {"color": "#e51616", "id": 67, "label": "67", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502_\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 10993, "label": "10993", "shape": "dot", "size": 240, "title": "X\u2502O\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 8077, "label": "8077", "shape": "dot", "size": 240, "title": "X\u2502_\u2502O\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 7105, "label": "7105", "shape": "dot", "size": 240, "title": "X\u2502_\u2502_\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 6781, "label": "6781", "shape": "dot", "size": 240, "title": "X\u2502_\u2502_\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 6637, "label": "6637", "shape": "dot", "size": 240, "title": "X\u2502_\u2502_\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 15367, "label": "15367", "shape": "dot", "size": 240, "title": "O\u2502X\u2502_\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 3703, "label": "3703", "shape": "dot", "size": 240, "title": "_\u2502X\u2502O\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 2731, "label": "2731", "shape": "dot", "size": 240, "title": "_\u2502X\u2502_\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 2407, "label": "2407", "shape": "dot", "size": 240, "title": "_\u2502X\u2502_\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 2263, "label": "2263", "shape": "dot", "size": 240, "title": "_\u2502X\u2502_\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 13909, "label": "13909", "shape": "dot", "size": 240, "title": "O\u2502_\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 5161, "label": "5161", "shape": "dot", "size": 240, "title": "_\u2502O\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 1273, "label": "1273", "shape": "dot", "size": 240, "title": "_\u2502_\u2502X\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 949, "label": "949", "shape": "dot", "size": 240, "title": "_\u2502_\u2502X\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 805, "label": "805", "shape": "dot", "size": 240, "title": "_\u2502_\u2502X\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 13423, "label": "13423", "shape": "dot", "size": 240, "title": "O\u2502_\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 4675, "label": "4675", "shape": "dot", "size": 240, "title": "_\u2502O\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 1759, "label": "1759", "shape": "dot", "size": 240, "title": "_\u2502_\u2502O\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 463, "label": "463", "shape": "dot", "size": 240, "title": "_\u2502_\u2502_\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 319, "label": "319", "shape": "dot", "size": 240, "title": "_\u2502_\u2502_\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 13261, "label": "13261", "shape": "dot", "size": 240, "title": "O\u2502_\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 4513, "label": "4513", "shape": "dot", "size": 240, "title": "_\u2502O\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 1597, "label": "1597", "shape": "dot", "size": 240, "title": "_\u2502_\u2502O\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 625, "label": "625", "shape": "dot", "size": 240, "title": "_\u2502_\u2502_\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 240}, {"color": "#16e5e5", "id": 157, "label": "157", "shape": "dot", "size": 240, "title": "_\u2502_\u2502_\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 240}, {"color": "#e51616", "id": 11722, "label": "11722", "shape": "dot", "size": 180, "title": "X\u2502O\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 11236, "label": "11236", "shape": "dot", "size": 180, "title": "X\u2502O\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 11074, "label": "11074", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11002, "label": "11002", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502_\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10264, "label": "10264", "shape": "dot", "size": 180, "title": "X\u2502X\u2502O\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 8320, "label": "8320", "shape": "dot", "size": 180, "title": "X\u2502_\u2502O\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 8158, "label": "8158", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502O\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8086, "label": "8086", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502O\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 9292, "label": "9292", "shape": "dot", "size": 180, "title": "X\u2502X\u2502_\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 7834, "label": "7834", "shape": "dot", "size": 180, "title": "X\u2502_\u2502X\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 7186, "label": "7186", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502_\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 7114, "label": "7114", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502_\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8968, "label": "8968", "shape": "dot", "size": 180, "title": "X\u2502X\u2502_\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 7510, "label": "7510", "shape": "dot", "size": 180, "title": "X\u2502_\u2502X\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 7024, "label": "7024", "shape": "dot", "size": 180, "title": "X\u2502_\u2502_\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 6790, "label": "6790", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502_\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8824, "label": "8824", "shape": "dot", "size": 180, "title": "X\u2502X\u2502_\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 7366, "label": "7366", "shape": "dot", "size": 180, "title": "X\u2502_\u2502X\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 6880, "label": "6880", "shape": "dot", "size": 180, "title": "X\u2502_\u2502_\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 6718, "label": "6718", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502_\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16096, "label": "16096", "shape": "dot", "size": 180, "title": "O\u2502X\u2502X\n_\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 15610, "label": "15610", "shape": "dot", "size": 180, "title": "O\u2502X\u2502_\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 15448, "label": "15448", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502_\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 15376, "label": "15376", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502_\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3946, "label": "3946", "shape": "dot", "size": 180, "title": "_\u2502X\u2502O\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 3784, "label": "3784", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502O\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3712, "label": "3712", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502O\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3460, "label": "3460", "shape": "dot", "size": 180, "title": "_\u2502X\u2502X\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 2812, "label": "2812", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502_\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2740, "label": "2740", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502_\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3136, "label": "3136", "shape": "dot", "size": 180, "title": "_\u2502X\u2502X\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 2650, "label": "2650", "shape": "dot", "size": 180, "title": "_\u2502X\u2502_\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 2416, "label": "2416", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502_\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 2992, "label": "2992", "shape": "dot", "size": 180, "title": "_\u2502X\u2502X\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 2506, "label": "2506", "shape": "dot", "size": 180, "title": "_\u2502X\u2502_\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 2344, "label": "2344", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502_\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14152, "label": "14152", "shape": "dot", "size": 180, "title": "O\u2502_\u2502X\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 13990, "label": "13990", "shape": "dot", "size": 180, "title": "O\u2502_\u2502X\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 13918, "label": "13918", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502X\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 5404, "label": "5404", "shape": "dot", "size": 180, "title": "_\u2502O\u2502X\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 5242, "label": "5242", "shape": "dot", "size": 180, "title": "_\u2502O\u2502X\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 5170, "label": "5170", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502X\n_\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1354, "label": "1354", "shape": "dot", "size": 180, "title": "_\u2502_\u2502X\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 1282, "label": "1282", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502X\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1192, "label": "1192", "shape": "dot", "size": 180, "title": "_\u2502_\u2502X\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 958, "label": "958", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502X\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1048, "label": "1048", "shape": "dot", "size": 180, "title": "_\u2502_\u2502X\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 886, "label": "886", "shape": "dot", "size": 180, "title": "_\u2502_\u2502X\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 13504, "label": "13504", "shape": "dot", "size": 180, "title": "O\u2502_\u2502_\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 13432, "label": "13432", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502_\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4756, "label": "4756", "shape": "dot", "size": 180, "title": "_\u2502O\u2502_\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 4684, "label": "4684", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502_\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1840, "label": "1840", "shape": "dot", "size": 180, "title": "_\u2502_\u2502O\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 1768, "label": "1768", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502O\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 472, "label": "472", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502_\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 400, "label": "400", "shape": "dot", "size": 180, "title": "_\u2502_\u2502_\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 180}, {"color": "#e51616", "id": 13270, "label": "13270", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502_\n_\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4522, "label": "4522", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502_\n_\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 1606, "label": "1606", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502O\n_\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 634, "label": "634", "shape": "triangle", "size": 60, "title": "_\u2502_\u2502_\nO\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 12208, "label": "12208", "shape": "dot", "size": 120, "title": "X\u2502O\u2502X\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 11884, "label": "11884", "shape": "dot", "size": 120, "title": "X\u2502O\u2502X\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 11740, "label": "11740", "shape": "dot", "size": 120, "title": "X\u2502O\u2502X\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 12694, "label": "12694", "shape": "dot", "size": 120, "title": "X\u2502O\u2502O\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 11398, "label": "11398", "shape": "dot", "size": 120, "title": "X\u2502O\u2502_\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 11254, "label": "11254", "shape": "dot", "size": 120, "title": "X\u2502O\u2502_\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 10750, "label": "10750", "shape": "dot", "size": 120, "title": "X\u2502X\u2502O\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 10426, "label": "10426", "shape": "dot", "size": 120, "title": "X\u2502X\u2502O\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 10282, "label": "10282", "shape": "dot", "size": 120, "title": "X\u2502X\u2502O\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 8482, "label": "8482", "shape": "dot", "size": 120, "title": "X\u2502_\u2502O\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 8338, "label": "8338", "shape": "dot", "size": 120, "title": "X\u2502_\u2502O\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 9454, "label": "9454", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502_\nO\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 9310, "label": "9310", "shape": "dot", "size": 120, "title": "X\u2502X\u2502_\nO\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 7996, "label": "7996", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502X\nO\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 7852, "label": "7852", "shape": "dot", "size": 120, "title": "X\u2502_\u2502X\nO\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 8986, "label": "8986", "shape": "dot", "size": 120, "title": "X\u2502X\u2502_\n_\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 7528, "label": "7528", "shape": "dot", "size": 120, "title": "X\u2502_\u2502X\n_\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 7042, "label": "7042", "shape": "dot", "size": 120, "title": "X\u2502_\u2502_\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 16582, "label": "16582", "shape": "dot", "size": 120, "title": "O\u2502X\u2502X\nO\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 16258, "label": "16258", "shape": "dot", "size": 120, "title": "O\u2502X\u2502X\n_\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 16114, "label": "16114", "shape": "dot", "size": 120, "title": "O\u2502X\u2502X\n_\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 17068, "label": "17068", "shape": "dot", "size": 120, "title": "O\u2502X\u2502O\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 15772, "label": "15772", "shape": "dot", "size": 120, "title": "O\u2502X\u2502_\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 15628, "label": "15628", "shape": "dot", "size": 120, "title": "O\u2502X\u2502_\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 4108, "label": "4108", "shape": "dot", "size": 120, "title": "_\u2502X\u2502O\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 3964, "label": "3964", "shape": "dot", "size": 120, "title": "_\u2502X\u2502O\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 3622, "label": "3622", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502X\nO\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 3478, "label": "3478", "shape": "dot", "size": 120, "title": "_\u2502X\u2502X\nO\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 3154, "label": "3154", "shape": "dot", "size": 120, "title": "_\u2502X\u2502X\n_\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 2668, "label": "2668", "shape": "dot", "size": 120, "title": "_\u2502X\u2502_\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 18526, "label": "18526", "shape": "dot", "size": 120, "title": "O\u2502O\u2502X\nX\u2502_\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 14314, "label": "14314", "shape": "dot", "size": 120, "title": "O\u2502_\u2502X\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 14170, "label": "14170", "shape": "dot", "size": 120, "title": "O\u2502_\u2502X\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 18364, "label": "18364", "shape": "dot", "size": 120, "title": "O\u2502O\u2502X\n_\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 14476, "label": "14476", "shape": "dot", "size": 120, "title": "O\u2502_\u2502X\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 14008, "label": "14008", "shape": "dot", "size": 120, "title": "O\u2502_\u2502X\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 5566, "label": "5566", "shape": "dot", "size": 120, "title": "_\u2502O\u2502X\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 5422, "label": "5422", "shape": "dot", "size": 120, "title": "_\u2502O\u2502X\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 5728, "label": "5728", "shape": "dot", "size": 120, "title": "_\u2502O\u2502X\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 5260, "label": "5260", "shape": "dot", "size": 120, "title": "_\u2502O\u2502X\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 1372, "label": "1372", "shape": "dot", "size": 120, "title": "_\u2502_\u2502X\nO\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 1210, "label": "1210", "shape": "dot", "size": 120, "title": "_\u2502_\u2502X\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 17878, "label": "17878", "shape": "dot", "size": 120, "title": "O\u2502O\u2502_\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 14962, "label": "14962", "shape": "dot", "size": 120, "title": "O\u2502_\u2502O\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 13522, "label": "13522", "shape": "dot", "size": 120, "title": "O\u2502_\u2502_\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 6214, "label": "6214", "shape": "dot", "size": 120, "title": "_\u2502O\u2502O\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 4774, "label": "4774", "shape": "dot", "size": 120, "title": "_\u2502O\u2502_\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#16e5e5", "id": 1858, "label": "1858", "shape": "dot", "size": 120, "title": "_\u2502_\u2502O\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 120}, {"color": "#e51616", "id": 12289, "label": "12289", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502X\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 12217, "label": "12217", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502X\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 12127, "label": "12127", "shape": "dot", "size": 60, "title": "X\u2502O\u2502X\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11893, "label": "11893", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502X\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11983, "label": "11983", "shape": "dot", "size": 60, "title": "X\u2502O\u2502X\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11821, "label": "11821", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502X\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 12775, "label": "12775", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502O\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 12703, "label": "12703", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502O\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11407, "label": "11407", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502_\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 11335, "label": "11335", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502_\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10831, "label": "10831", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502O\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10759, "label": "10759", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502O\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10669, "label": "10669", "shape": "dot", "size": 60, "title": "X\u2502X\u2502O\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10435, "label": "10435", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502O\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10525, "label": "10525", "shape": "dot", "size": 60, "title": "X\u2502X\u2502O\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10363, "label": "10363", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502O\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8491, "label": "8491", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502O\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 8419, "label": "8419", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502O\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 10039, "label": "10039", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502X\nO\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 9391, "label": "9391", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502_\nO\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 7933, "label": "7933", "shape": "triangle", "size": 60, "title": "X\u2502_\u2502X\nO\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 9715, "label": "9715", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502X\n_\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 9229, "label": "9229", "shape": "dot", "size": 60, "title": "X\u2502X\u2502_\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 7771, "label": "7771", "shape": "dot", "size": 60, "title": "X\u2502_\u2502X\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16663, "label": "16663", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502X\nO\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16591, "label": "16591", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502X\nO\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16501, "label": "16501", "shape": "dot", "size": 60, "title": "O\u2502X\u2502X\nX\u2502O\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16267, "label": "16267", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502X\n_\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16357, "label": "16357", "shape": "dot", "size": 60, "title": "O\u2502X\u2502X\nX\u2502_\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 16195, "label": "16195", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502X\n_\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 17149, "label": "17149", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502O\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 17077, "label": "17077", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502O\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 15781, "label": "15781", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502_\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 15709, "label": "15709", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502_\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4117, "label": "4117", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502O\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 4045, "label": "4045", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502O\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3559, "label": "3559", "shape": "triangle", "size": 60, "title": "_\u2502X\u2502X\nO\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 3397, "label": "3397", "shape": "dot", "size": 60, "title": "_\u2502X\u2502X\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 18607, "label": "18607", "shape": "dot", "size": 60, "title": "O\u2502O\u2502X\nX\u2502X\u2502O\n_\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 18535, "label": "18535", "shape": "triangle", "size": 60, "title": "O\u2502O\u2502X\nX\u2502_\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14323, "label": "14323", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502X\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14251, "label": "14251", "shape": "dot", "size": 60, "title": "O\u2502_\u2502X\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 18373, "label": "18373", "shape": "triangle", "size": 60, "title": "O\u2502O\u2502X\n_\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14485, "label": "14485", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502X\nO\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 5575, "label": "5575", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502X\nX\u2502O\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 5503, "label": "5503", "shape": "dot", "size": 60, "title": "_\u2502O\u2502X\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 5737, "label": "5737", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502X\nO\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 17887, "label": "17887", "shape": "triangle", "size": 60, "title": "O\u2502O\u2502_\nX\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 14971, "label": "14971", "shape": "triangle", "size": 60, "title": "O\u2502_\u2502O\nX\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#e51616", "id": 6223, "label": "6223", "shape": "triangle", "size": 60, "title": "_\u2502O\u2502O\nX\u2502X\u2502O\nX\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 12145, "label": "12145", "shape": "triangle", "size": 60, "title": "X\u2502O\u2502X\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 10687, "label": "10687", "shape": "triangle", "size": 60, "title": "X\u2502X\u2502O\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 16519, "label": "16519", "shape": "triangle", "size": 60, "title": "O\u2502X\u2502X\nX\u2502O\u2502O\nO\u2502X\u2502X\n", "value": 60}, {"color": "#16e5e5", "id": 18625, "label": "18625", "shape": "triangle", "size": 60, "title": "O\u2502O\u2502X\nX\u2502X\u2502O\nO\u2502X\u2502X\n", "value": 60}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 58, "to": 6619}, {"arrows": "to", "from": 58, "to": 2245}, {"arrows": "to", "from": 58, "to": 787}, {"arrows": "to", "from": 58, "to": 301}, {"arrows": "to", "from": 58, "to": 139}, {"arrows": "to", "from": 58, "to": 67}, {"arrows": "to", "from": 6619, "to": 10993}, {"arrows": "to", "from": 6619, "to": 8077}, {"arrows": "to", "from": 6619, "to": 7105}, {"arrows": "to", "from": 6619, "to": 6781}, {"arrows": "to", "from": 6619, "to": 6637}, {"arrows": "to", "from": 10993, "to": 11722}, {"arrows": "to", "from": 10993, "to": 11236}, {"arrows": "to", "from": 10993, "to": 11074}, {"arrows": "to", "from": 10993, "to": 11002}, {"arrows": "to", "from": 11722, "to": 12208}, {"arrows": "to", "from": 11722, "to": 11884}, {"arrows": "to", "from": 11722, "to": 11740}, {"arrows": "to", "from": 12208, "to": 12289}, {"arrows": "to", "from": 12208, "to": 12217}, {"arrows": "to", "from": 11884, "to": 12127}, {"arrows": "to", "from": 11884, "to": 11893}, {"arrows": "to", "from": 12127, "to": 12145}, {"arrows": "to", "from": 11740, "to": 11983}, {"arrows": "to", "from": 11740, "to": 11821}, {"arrows": "to", "from": 11983, "to": 12145}, {"arrows": "to", "from": 11236, "to": 12694}, {"arrows": "to", "from": 11236, "to": 11398}, {"arrows": "to", "from": 11236, "to": 11254}, {"arrows": "to", "from": 12694, "to": 12775}, {"arrows": "to", "from": 12694, "to": 12703}, {"arrows": "to", "from": 11398, "to": 12127}, {"arrows": "to", "from": 11398, "to": 11407}, {"arrows": "to", "from": 11254, "to": 11983}, {"arrows": "to", "from": 11254, "to": 11335}, {"arrows": "to", "from": 8077, "to": 10264}, {"arrows": "to", "from": 8077, "to": 8320}, {"arrows": "to", "from": 8077, "to": 8158}, {"arrows": "to", "from": 8077, "to": 8086}, {"arrows": "to", "from": 10264, "to": 10750}, {"arrows": "to", "from": 10264, "to": 10426}, {"arrows": "to", "from": 10264, "to": 10282}, {"arrows": "to", "from": 10750, "to": 10831}, {"arrows": "to", "from": 10750, "to": 10759}, {"arrows": "to", "from": 10426, "to": 10669}, {"arrows": "to", "from": 10426, "to": 10435}, {"arrows": "to", "from": 10669, "to": 10687}, {"arrows": "to", "from": 10282, "to": 10525}, {"arrows": "to", "from": 10282, "to": 10363}, {"arrows": "to", "from": 10525, "to": 10687}, {"arrows": "to", "from": 8320, "to": 12694}, {"arrows": "to", "from": 8320, "to": 8482}, {"arrows": "to", "from": 8320, "to": 8338}, {"arrows": "to", "from": 8482, "to": 10669}, {"arrows": "to", "from": 8482, "to": 8491}, {"arrows": "to", "from": 8338, "to": 10525}, {"arrows": "to", "from": 8338, "to": 8419}, {"arrows": "to", "from": 7105, "to": 9292}, {"arrows": "to", "from": 7105, "to": 7834}, {"arrows": "to", "from": 7105, "to": 7186}, {"arrows": "to", "from": 7105, "to": 7114}, {"arrows": "to", "from": 9292, "to": 10750}, {"arrows": "to", "from": 9292, "to": 9454}, {"arrows": "to", "from": 9292, "to": 9310}, {"arrows": "to", "from": 9310, "to": 10039}, {"arrows": "to", "from": 9310, "to": 9391}, {"arrows": "to", "from": 7834, "to": 12208}, {"arrows": "to", "from": 7834, "to": 7996}, {"arrows": "to", "from": 7834, "to": 7852}, {"arrows": "to", "from": 7852, "to": 10039}, {"arrows": "to", "from": 7852, "to": 7933}, {"arrows": "to", "from": 6781, "to": 8968}, {"arrows": "to", "from": 6781, "to": 7510}, {"arrows": "to", "from": 6781, "to": 7024}, {"arrows": "to", "from": 6781, "to": 6790}, {"arrows": "to", "from": 8968, "to": 10426}, {"arrows": "to", "from": 8968, "to": 9454}, {"arrows": "to", "from": 8968, "to": 8986}, {"arrows": "to", "from": 8986, "to": 9715}, {"arrows": "to", "from": 8986, "to": 9229}, {"arrows": "to", "from": 9229, "to": 10687}, {"arrows": "to", "from": 7510, "to": 11884}, {"arrows": "to", "from": 7510, "to": 7996}, {"arrows": "to", "from": 7510, "to": 7528}, {"arrows": "to", "from": 7528, "to": 9715}, {"arrows": "to", "from": 7528, "to": 7771}, {"arrows": "to", "from": 7771, "to": 12145}, {"arrows": "to", "from": 7024, "to": 11398}, {"arrows": "to", "from": 7024, "to": 8482}, {"arrows": "to", "from": 7024, "to": 7042}, {"arrows": "to", "from": 7042, "to": 9229}, {"arrows": "to", "from": 7042, "to": 7771}, {"arrows": "to", "from": 6637, "to": 8824}, {"arrows": "to", "from": 6637, "to": 7366}, {"arrows": "to", "from": 6637, "to": 6880}, {"arrows": "to", "from": 6637, "to": 6718}, {"arrows": "to", "from": 8824, "to": 10282}, {"arrows": "to", "from": 8824, "to": 9310}, {"arrows": "to", "from": 8824, "to": 8986}, {"arrows": "to", "from": 7366, "to": 11740}, {"arrows": "to", "from": 7366, "to": 7852}, {"arrows": "to", "from": 7366, "to": 7528}, {"arrows": "to", "from": 6880, "to": 11254}, {"arrows": "to", "from": 6880, "to": 8338}, {"arrows": "to", "from": 6880, "to": 7042}, {"arrows": "to", "from": 2245, "to": 15367}, {"arrows": "to", "from": 2245, "to": 3703}, {"arrows": "to", "from": 2245, "to": 2731}, {"arrows": "to", "from": 2245, "to": 2407}, {"arrows": "to", "from": 2245, "to": 2263}, {"arrows": "to", "from": 15367, "to": 16096}, {"arrows": "to", "from": 15367, "to": 15610}, {"arrows": "to", "from": 15367, "to": 15448}, {"arrows": "to", "from": 15367, "to": 15376}, {"arrows": "to", "from": 16096, "to": 16582}, {"arrows": "to", "from": 16096, "to": 16258}, {"arrows": "to", "from": 16096, "to": 16114}, {"arrows": "to", "from": 16582, "to": 16663}, {"arrows": "to", "from": 16582, "to": 16591}, {"arrows": "to", "from": 16258, "to": 16501}, {"arrows": "to", "from": 16258, "to": 16267}, {"arrows": "to", "from": 16501, "to": 16519}, {"arrows": "to", "from": 16114, "to": 16357}, {"arrows": "to", "from": 16114, "to": 16195}, {"arrows": "to", "from": 16357, "to": 16519}, {"arrows": "to", "from": 15610, "to": 17068}, {"arrows": "to", "from": 15610, "to": 15772}, {"arrows": "to", "from": 15610, "to": 15628}, {"arrows": "to", "from": 17068, "to": 17149}, {"arrows": "to", "from": 17068, "to": 17077}, {"arrows": "to", "from": 15772, "to": 16501}, {"arrows": "to", "from": 15772, "to": 15781}, {"arrows": "to", "from": 15628, "to": 16357}, {"arrows": "to", "from": 15628, "to": 15709}, {"arrows": "to", "from": 3703, "to": 10264}, {"arrows": "to", "from": 3703, "to": 3946}, {"arrows": "to", "from": 3703, "to": 3784}, {"arrows": "to", "from": 3703, "to": 3712}, {"arrows": "to", "from": 3946, "to": 17068}, {"arrows": "to", "from": 3946, "to": 4108}, {"arrows": "to", "from": 3946, "to": 3964}, {"arrows": "to", "from": 4108, "to": 10669}, {"arrows": "to", "from": 4108, "to": 4117}, {"arrows": "to", "from": 3964, "to": 10525}, {"arrows": "to", "from": 3964, "to": 4045}, {"arrows": "to", "from": 2731, "to": 9292}, {"arrows": "to", "from": 2731, "to": 3460}, {"arrows": "to", "from": 2731, "to": 2812}, {"arrows": "to", "from": 2731, "to": 2740}, {"arrows": "to", "from": 3460, "to": 16582}, {"arrows": "to", "from": 3460, "to": 3622}, {"arrows": "to", "from": 3460, "to": 3478}, {"arrows": "to", "from": 3478, "to": 10039}, {"arrows": "to", "from": 3478, "to": 3559}, {"arrows": "to", "from": 2407, "to": 8968}, {"arrows": "to", "from": 2407, "to": 3136}, {"arrows": "to", "from": 2407, "to": 2650}, {"arrows": "to", "from": 2407, "to": 2416}, {"arrows": "to", "from": 3136, "to": 16258}, {"arrows": "to", "from": 3136, "to": 3622}, {"arrows": "to", "from": 3136, "to": 3154}, {"arrows": "to", "from": 3154, "to": 9715}, {"arrows": "to", "from": 3154, "to": 3397}, {"arrows": "to", "from": 3397, "to": 16519}, {"arrows": "to", "from": 2650, "to": 15772}, {"arrows": "to", "from": 2650, "to": 4108}, {"arrows": "to", "from": 2650, "to": 2668}, {"arrows": "to", "from": 2668, "to": 9229}, {"arrows": "to", "from": 2668, "to": 3397}, {"arrows": "to", "from": 2263, "to": 8824}, {"arrows": "to", "from": 2263, "to": 2992}, {"arrows": "to", "from": 2263, "to": 2506}, {"arrows": "to", "from": 2263, "to": 2344}, {"arrows": "to", "from": 2992, "to": 16114}, {"arrows": "to", "from": 2992, "to": 3478}, {"arrows": "to", "from": 2992, "to": 3154}, {"arrows": "to", "from": 2506, "to": 15628}, {"arrows": "to", "from": 2506, "to": 3964}, {"arrows": "to", "from": 2506, "to": 2668}, {"arrows": "to", "from": 787, "to": 13909}, {"arrows": "to", "from": 787, "to": 5161}, {"arrows": "to", "from": 787, "to": 1273}, {"arrows": "to", "from": 787, "to": 949}, {"arrows": "to", "from": 787, "to": 805}, {"arrows": "to", "from": 13909, "to": 16096}, {"arrows": "to", "from": 13909, "to": 14152}, {"arrows": "to", "from": 13909, "to": 13990}, {"arrows": "to", "from": 13909, "to": 13918}, {"arrows": "to", "from": 14152, "to": 18526}, {"arrows": "to", "from": 14152, "to": 14314}, {"arrows": "to", "from": 14152, "to": 14170}, {"arrows": "to", "from": 18526, "to": 18607}, {"arrows": "to", "from": 18526, "to": 18535}, {"arrows": "to", "from": 18607, "to": 18625}, {"arrows": "to", "from": 14314, "to": 16501}, {"arrows": "to", "from": 14314, "to": 14323}, {"arrows": "to", "from": 14170, "to": 16357}, {"arrows": "to", "from": 14170, "to": 14251}, {"arrows": "to", "from": 14251, "to": 18625}, {"arrows": "to", "from": 13990, "to": 18364}, {"arrows": "to", "from": 13990, "to": 14476}, {"arrows": "to", "from": 13990, "to": 14008}, {"arrows": "to", "from": 18364, "to": 18607}, {"arrows": "to", "from": 18364, "to": 18373}, {"arrows": "to", "from": 14476, "to": 16663}, {"arrows": "to", "from": 14476, "to": 14485}, {"arrows": "to", "from": 14008, "to": 16195}, {"arrows": "to", "from": 14008, "to": 14251}, {"arrows": "to", "from": 5161, "to": 11722}, {"arrows": "to", "from": 5161, "to": 5404}, {"arrows": "to", "from": 5161, "to": 5242}, {"arrows": "to", "from": 5161, "to": 5170}, {"arrows": "to", "from": 5404, "to": 18526}, {"arrows": "to", "from": 5404, "to": 5566}, {"arrows": "to", "from": 5404, "to": 5422}, {"arrows": "to", "from": 5566, "to": 12127}, {"arrows": "to", "from": 5566, "to": 5575}, {"arrows": "to", "from": 5422, "to": 11983}, {"arrows": "to", "from": 5422, "to": 5503}, {"arrows": "to", "from": 5503, "to": 18625}, {"arrows": "to", "from": 5242, "to": 18364}, {"arrows": "to", "from": 5242, "to": 5728}, {"arrows": "to", "from": 5242, "to": 5260}, {"arrows": "to", "from": 5728, "to": 12289}, {"arrows": "to", "from": 5728, "to": 5737}, {"arrows": "to", "from": 5260, "to": 11821}, {"arrows": "to", "from": 5260, "to": 5503}, {"arrows": "to", "from": 1273, "to": 7834}, {"arrows": "to", "from": 1273, "to": 3460}, {"arrows": "to", "from": 1273, "to": 1354}, {"arrows": "to", "from": 1273, "to": 1282}, {"arrows": "to", "from": 1354, "to": 14476}, {"arrows": "to", "from": 1354, "to": 5728}, {"arrows": "to", "from": 1354, "to": 1372}, {"arrows": "to", "from": 1372, "to": 7933}, {"arrows": "to", "from": 1372, "to": 3559}, {"arrows": "to", "from": 949, "to": 7510}, {"arrows": "to", "from": 949, "to": 3136}, {"arrows": "to", "from": 949, "to": 1192}, {"arrows": "to", "from": 949, "to": 958}, {"arrows": "to", "from": 1192, "to": 14314}, {"arrows": "to", "from": 1192, "to": 5566}, {"arrows": "to", "from": 1192, "to": 1210}, {"arrows": "to", "from": 1210, "to": 7771}, {"arrows": "to", "from": 1210, "to": 3397}, {"arrows": "to", "from": 805, "to": 7366}, {"arrows": "to", "from": 805, "to": 2992}, {"arrows": "to", "from": 805, "to": 1048}, {"arrows": "to", "from": 805, "to": 886}, {"arrows": "to", "from": 1048, "to": 14170}, {"arrows": "to", "from": 1048, "to": 5422}, {"arrows": "to", "from": 1048, "to": 1210}, {"arrows": "to", "from": 886, "to": 14008}, {"arrows": "to", "from": 886, "to": 5260}, {"arrows": "to", "from": 886, "to": 1372}, {"arrows": "to", "from": 301, "to": 13423}, {"arrows": "to", "from": 301, "to": 4675}, {"arrows": "to", "from": 301, "to": 1759}, {"arrows": "to", "from": 301, "to": 463}, {"arrows": "to", "from": 301, "to": 319}, {"arrows": "to", "from": 13423, "to": 15610}, {"arrows": "to", "from": 13423, "to": 14152}, {"arrows": "to", "from": 13423, "to": 13504}, {"arrows": "to", "from": 13423, "to": 13432}, {"arrows": "to", "from": 13504, "to": 17878}, {"arrows": "to", "from": 13504, "to": 14962}, {"arrows": "to", "from": 13504, "to": 13522}, {"arrows": "to", "from": 17878, "to": 18607}, {"arrows": "to", "from": 17878, "to": 17887}, {"arrows": "to", "from": 14962, "to": 17149}, {"arrows": "to", "from": 14962, "to": 14971}, {"arrows": "to", "from": 13522, "to": 15709}, {"arrows": "to", "from": 13522, "to": 14251}, {"arrows": "to", "from": 4675, "to": 11236}, {"arrows": "to", "from": 4675, "to": 5404}, {"arrows": "to", "from": 4675, "to": 4756}, {"arrows": "to", "from": 4675, "to": 4684}, {"arrows": "to", "from": 4756, "to": 17878}, {"arrows": "to", "from": 4756, "to": 6214}, {"arrows": "to", "from": 4756, "to": 4774}, {"arrows": "to", "from": 6214, "to": 12775}, {"arrows": "to", "from": 6214, "to": 6223}, {"arrows": "to", "from": 4774, "to": 11335}, {"arrows": "to", "from": 4774, "to": 5503}, {"arrows": "to", "from": 1759, "to": 8320}, {"arrows": "to", "from": 1759, "to": 3946}, {"arrows": "to", "from": 1759, "to": 1840}, {"arrows": "to", "from": 1759, "to": 1768}, {"arrows": "to", "from": 1840, "to": 14962}, {"arrows": "to", "from": 1840, "to": 6214}, {"arrows": "to", "from": 1840, "to": 1858}, {"arrows": "to", "from": 1858, "to": 8419}, {"arrows": "to", "from": 1858, "to": 4045}, {"arrows": "to", "from": 463, "to": 7024}, {"arrows": "to", "from": 463, "to": 2650}, {"arrows": "to", "from": 463, "to": 1192}, {"arrows": "to", "from": 463, "to": 472}, {"arrows": "to", "from": 319, "to": 6880}, {"arrows": "to", "from": 319, "to": 2506}, {"arrows": "to", "from": 319, "to": 1048}, {"arrows": "to", "from": 319, "to": 400}, {"arrows": "to", "from": 400, "to": 13522}, {"arrows": "to", "from": 400, "to": 4774}, {"arrows": "to", "from": 400, "to": 1858}, {"arrows": "to", "from": 139, "to": 13261}, {"arrows": "to", "from": 139, "to": 4513}, {"arrows": "to", "from": 139, "to": 1597}, {"arrows": "to", "from": 139, "to": 625}, {"arrows": "to", "from": 139, "to": 157}, {"arrows": "to", "from": 13261, "to": 15448}, {"arrows": "to", "from": 13261, "to": 13990}, {"arrows": "to", "from": 13261, "to": 13504}, {"arrows": "to", "from": 13261, "to": 13270}, {"arrows": "to", "from": 4513, "to": 11074}, {"arrows": "to", "from": 4513, "to": 5242}, {"arrows": "to", "from": 4513, "to": 4756}, {"arrows": "to", "from": 4513, "to": 4522}, {"arrows": "to", "from": 1597, "to": 8158}, {"arrows": "to", "from": 1597, "to": 3784}, {"arrows": "to", "from": 1597, "to": 1840}, {"arrows": "to", "from": 1597, "to": 1606}, {"arrows": "to", "from": 625, "to": 7186}, {"arrows": "to", "from": 625, "to": 2812}, {"arrows": "to", "from": 625, "to": 1354}, {"arrows": "to", "from": 625, "to": 634}, {"arrows": "to", "from": 157, "to": 6718}, {"arrows": "to", "from": 157, "to": 2344}, {"arrows": "to", "from": 157, "to": 886}, {"arrows": "to", "from": 157, "to": 400}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

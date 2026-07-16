@@ -3,12 +3,13 @@
 /src/tic_tac_toe_detroix23/tests.py
 """
 import pprint
+from typing import Optional
 
 import numpy
 
 from utilities.debug import assert_eq
 from utilities import graphviz_wrapper
-from tic_tac_toe_detroix23.definitions import Board, Graph, LayoutEngine
+from tic_tac_toe_detroix23.definitions import Board, Graph, LayoutEngine, BoardList
 from tic_tac_toe_detroix23 import (
     configurations, plays, conditions, ui, graphs, exports 
 )
@@ -21,11 +22,13 @@ def next_configuration1() -> None:
     b1: Board = configurations.empty((3, 3))
     assert_eq(configurations.image(b1, player_count + 1), 0)
     
-    b1_next = plays.next_board(b1, size,1,)
+    b1_next: Optional[BoardList] = plays.next_board(b1, size,1,)
     assert b1_next is not None
     for index, board in enumerate(b1_next):
-        assert_eq(configurations.image(board, player_count + 1), 3 ** (len(b1_next) - index - 1))    
-
+        assert_eq(
+            configurations.image(board, player_count + 1), 
+            3 ** (len(b1_next) - index - 1)
+        )    
 
     b2: Board = numpy.array([
         0, 2, 1,
@@ -52,7 +55,7 @@ def generate_board_graph1() -> None:
     win_length: int = 3
     player_count: int = 2
     player_start: int = 2
-    board_start = configurations.empty(size)
+    board_start: Board = configurations.empty(size)
     node_start: int = configurations.image(board_start, player_count + 1)
 
     win_conditions = conditions.WinConditions(
@@ -97,7 +100,7 @@ def generate_board_graph1() -> None:
 
     draw: bool = False
     if draw:
-        graph_drawer = graphing.GraphDrawer(
+        graph_drawer = graphviz_wrapper.GraphDrawer(
             f"graph{node_start}_{size[0]}x{size[1]}_d-1",  
             graph,
             graph_index,

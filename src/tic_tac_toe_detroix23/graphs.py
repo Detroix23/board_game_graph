@@ -67,8 +67,8 @@ class NodeState:
         Nice `NodeState` string representation of all the attributes.
         """
         return (
-            f"node={f'{self.node},': <6} depth={self.depth}, player={self.player}), "
-            f"win_state={f'{self.win_state},': <3} neighbors={self.neighbors})"
+            f"node={self.node: <5} depth={self.depth} player={self.player} "
+            f"win_state={self.win_state: <2} neighbors={self.neighbors}"
         )
 
 
@@ -90,13 +90,14 @@ def determine_win_state(
     """
     Returns an `int` corresponding to 
     the `win_state` of `node` in `graph`:
-    - `0`: game ending with a tie;
+    - `= 0`: game ending with a tie;
     - `> 0`: winning player's ID;
-    - `-1`: else.
+    - `= -1`: else.
     """
+    winner: int = win_conditions.get_winner(node)
     return (
-        win_conditions.get_winner(node)
-        if not is_leaf(graph, node)
+        winner
+        if winner > 0 or not is_leaf(graph, node)
         else 0
     )
 
@@ -109,10 +110,15 @@ def indexing(
     depth_start: int = 0,
 ) -> GraphIndex:
     """
-    Use a breadth-first search, to return a `dict` of `node`: `NodeState`:
-    - node: `int`;
-    - depth: `int`;
-    - win_state: `int`. 
+    Use a breadth-first search, to return a `dict` of `node`: `NodeState`.
+
+    Arguments:
+        `graph`: `Graph`;
+        `node_start`: `int`;
+        `player_start`: `int`;
+        `player_count`: `int`;
+        `win_conditions`: `WinConditions`;
+        `depth_start`: `int`. Used in recursion. Default `d = 0`;
     """
     node_start_win_state: int = determine_win_state(
         graph,

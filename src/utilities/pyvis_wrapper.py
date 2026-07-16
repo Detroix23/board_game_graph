@@ -6,9 +6,9 @@ Draw graphs with `pyvis`.
 """
 import pathlib
 
-import pyvis  # pyright: ignore[reportMissingTypeStubs]
+import pyvis  # type: ignore[import-untyped]
 
-from utilities import graphics
+from utilities import graphics, graphing
 from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS, PATH_PYVIS
 from tic_tac_toe_detroix23 import configurations, conditions, graphs, ui
 
@@ -66,7 +66,7 @@ class Shape:
     """ Text outside. """
 
 
-class GraphDrawer:
+class GraphDrawer(graphing.GraphDrawer):
     """
     # Complete `GraphDrawer` with `graphviz`.
     """
@@ -184,11 +184,13 @@ class GraphDrawer:
         Draw a with `pyvis` the `graph`.
         """
         path: pathlib.Path = PATH_PYVIS / f"ttt_{self.name}.html"
-        print(str(path))
 
-        self.network.toggle_physics(True)  # pyright: ignore[reportUnknownMemberType]
-        self.network.show_buttons()         # pyright: ignore[reportUnknownMemberType]
-        self.network.show(                  # pyright: ignore[reportUnknownMemberType]
+        self.network.toggle_physics(True)       # pyright: ignore[reportUnknownMemberType]
+        self.network.toggle_drag_nodes(True)    # pyright: ignore[reportUnknownMemberType]
+        self.network.toggle_stabilization(True) # pyright: ignore[reportUnknownMemberType]
+        self.network.show_buttons()             # pyright: ignore[reportUnknownMemberType]
+        print("Pyvis HTML export path:", end=" ")
+        self.network.show(                      # pyright: ignore[reportUnknownMemberType]
             name=str(path),
             notebook=False,
         )

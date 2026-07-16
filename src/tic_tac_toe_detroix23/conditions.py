@@ -183,7 +183,7 @@ class WinConditions:
     def get_winner(self, image: int) -> int:
         """
         Returns an `int` code of the winner of the given `image`:
-        - `-1` game is not interrupted;
+        - `= -1` game is not interrupted;
         - `> 0` is the ID of the player that wins.
         """
         return self._win_images.get(image, -1)

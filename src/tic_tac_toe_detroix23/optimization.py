@@ -35,13 +35,14 @@ def next_best_node(
     best_node: int = 0
     best_score: float = 0.0
 
+    # Nodes and debug message.
     nodes: list[tuple[int, str]] = []
 
-    for node in graph[starting_node]:
-        _sub, sub_index = graphs.sub_graph(
+    for starting_neighbors in graph[starting_node]:
+        _, sub_index = graphs.sub_graph(
             graph,
             graph_index,
-            int(node),
+            int(starting_neighbors),
         )
 
         outcomes: dict[int, int] = graphs.outcomes(sub_index, player_count)
@@ -49,10 +50,13 @@ def next_best_node(
         if method == NextBestNodeMethod.COUNT:
             wins: int = outcomes[player]
             if wins >= best_score:
-                best_node = int(node)
+                best_node = int(starting_neighbors)
                 best_score = wins
 
-            nodes.append((int(node), f"node={node}, wins={wins}, outcomes={outcomes};"))
+            nodes.append((
+                int(starting_neighbors), 
+                f"node={starting_neighbors: <5} wins={wins: <2} outcomes={outcomes};")
+            )
 
         elif method == NextBestNodeMethod.RATIO:
             outcomes_count: int = sum(
@@ -64,15 +68,18 @@ def next_best_node(
             )
             ratio: float = outcomes[player] / outcomes_count
             if ratio >= best_score:
-                best_node = int(node)
+                best_node = int(starting_neighbors)
                 best_score = ratio
 
-            nodes.append((int(node),
-                f"node={node}, ratio={ratio}, "
-                f"outcomes={outcomes}, c={outcomes_count};"
+            nodes.append((
+                int(starting_neighbors),
+                f"node={starting_neighbors: <5} ratio={ratio}, "
+                f"outcomes={outcomes} c={outcomes_count};"
             ))
 
-    for node, message in nodes:
-        print(f"{'*' if node == best_node else '-'} {message}")
+    print("\n".join([
+        f"{'*' if node == best_node else '-'} {message}"
+        for node, message in nodes   
+    ]))
 
     return best_node
