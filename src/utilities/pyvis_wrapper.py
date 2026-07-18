@@ -10,7 +10,7 @@ import pyvis  # type: ignore[import-untyped]
 
 from utilities import graphics, graphing
 from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS, PATH_PYVIS
-from tic_tac_toe_detroix23 import configurations, conditions, graphs, ui
+from tic_tac_toe_detroix23 import configurations, conditions, indexing, ui
 
 class Shape:
     """
@@ -72,7 +72,7 @@ class GraphDrawer(graphing.GraphDrawer):
     """
     name: str
     graph: Graph
-    graph_index: graphs.GraphIndex
+    graph_index: indexing.GraphIndex
     node_start: int
     player_start: int
     player_count: int
@@ -85,7 +85,7 @@ class GraphDrawer(graphing.GraphDrawer):
         self,
         name: str, 
         graph: Graph,
-        graph_index: graphs.GraphIndex,
+        graph_index: indexing.GraphIndex,
         node_start: int,
         player_start: int,
         player_count: int,
@@ -131,10 +131,10 @@ class GraphDrawer(graphing.GraphDrawer):
             additional_settings: dict[str, int] = {}
             if state.win_state > 0:
                 # Win.
-                shape = Shape.SQUARE
+                shape = Shape.TRIANGLE
             elif state.win_state == 0:
                 # Tie.
-                shape = Shape.TRIANGLE
+                shape = Shape.SQUARE
             elif node == self.node_start:
                 # Start.
                 shape = Shape.STAR
@@ -146,7 +146,7 @@ class GraphDrawer(graphing.GraphDrawer):
 
             self.network.add_node(  # pyright: ignore[reportUnknownMemberType]
                 node,
-                label=str(node),
+                label=f"{node} {'★' if state.forced_win else ''}",
                 title=ui.format_board(
                     configurations.reverse_image(
                         node, 

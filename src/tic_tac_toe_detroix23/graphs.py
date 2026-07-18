@@ -4,72 +4,10 @@
 
 Graph logic.
 """
-from typing import Optional
-
-import numpy
-
-from tic_tac_toe_detroix23.definitions import Graph, ImageList
+from tic_tac_toe_detroix23.definitions import Graph, NULL_IMAGE_LIST
+from tic_tac_toe_detroix23.indexing import GraphIndex, NodeState
 from tic_tac_toe_detroix23.conditions import WinConditions
 from tic_tac_toe_detroix23 import plays
-
-GraphIndex = dict[int, 'NodeState']
-
-class NodeState:
-    """
-    # Named tuple to index `NodeState`s of a graph.
-
-    Attributes:
-        `node`: `int` 
-        `depth`: `int`
-        `win_state`: `int`
-        `forced_wins`: `dict[int, int]`
-        `neighbors`: `list[int]`
-    """
-    node: int
-    depth: int
-    player: int
-    win_state: int
-    forced_wins: dict[int, int]
-    neighbors: Optional[ImageList]
-    """ 
-    - `0`: game ending with a tie;
-    - `> 0`: winning player's ID;
-    - `-1`: else.
-    """
-
-    def __init__(
-        self,
-        node: int,
-        depth: int,
-        player: int,
-        win_state: int,
-        neighbors: Optional[ImageList],
-    ) -> None:
-        """
-        Create the named tuple `NodeState`.
-
-        `win_state`:
-        - `0`: game ending with a tie;
-        - `> 0`: winning player's ID;
-        - `-1`: else.
-        """
-        self.node = node
-        self.depth = depth
-        self.player = player
-        self.win_state = win_state
-        self.forced_wins = dict()
-        self.neighbors = neighbors
-
-        return
-    
-    def __str__(self) -> str:
-        """
-        Nice `NodeState` string representation of all the attributes.
-        """
-        return (
-            f"node={self.node: <5} depth={self.depth} player={self.player} "
-            f"win_state={self.win_state: <2} neighbors={self.neighbors}"
-        )
 
 
 def is_leaf(
@@ -110,7 +48,12 @@ def indexing(
     depth_start: int = 0,
 ) -> GraphIndex:
     """
-    Use a breadth-first search, to return a `dict` of `node`: `NodeState`.
+    Uses a breadth-first search.
+     
+    Returns:
+       `GraphIndex`: a `dict` of:
+        - key: `int`, node ID;
+        - value: :py:class:`NodeState`.
 
     Arguments:
         `graph`: `Graph`;
@@ -120,57 +63,57 @@ def indexing(
         `win_conditions`: `WinConditions`;
         `depth_start`: `int`. Used in recursion. Default `d = 0`;
     """
-    node_start_win_state: int = determine_win_state(
-        graph,
-        node_start,
-        win_conditions,
-    )
-
     visited: set[int] = set()
+    index: dict[int, NodeState] = dict()
     queue: list[NodeState] = [NodeState(
         node_start, 
         depth_start, 
         player_start,
-        node_start_win_state,
-        graph[node_start],
+        win_state=determine_win_state(
+            graph,
+            node_start,
+            win_conditions,
+        ),
+        neighbors=graph[node_start],
     )]
-    index: dict[int, NodeState] = dict()
 
     while queue:
         state: NodeState = queue.pop(0)
         if state.node not in visited:
+            # Register the unvisited node.
             visited.add(state.node)
             index[state.node] = (NodeState(
                 state.node, 
                 state.depth,
                 state.player,
                 state.win_state,
-                (
+                neighbors=(
                     graph[state.node]
                     if state.node in graph.keys()
                     else None
                 ),
             ))
 
+            # Queue neighbors of the unvisited node.
             for neighbor in graph.get(state.node, []):
                 if neighbor not in visited:
+                    image: int = int(neighbor)
                     player: int = plays.turn_player(
                         state.depth + 1, 
                         player_start, 
                         player_count,
                     )
-                    image: int = int(neighbor)
 
                     queue.append(NodeState(
-                        image, 
-                        state.depth + 1,
-                        player,
-                        determine_win_state(
+                        node=image, 
+                        depth=state.depth + 1,
+                        player=player,
+                        win_state=determine_win_state(
                             graph,
                             image,
                             win_conditions,
                         ),
-                        (   
+                        neighbors=(   
                             graph[int(neighbor)]
                             if image in graph.keys()
                             else None
@@ -209,21 +152,22 @@ def sub_graph(
     - 1: sub-graph's index.
     """
     visited: set[int] = set()
-    queue: list[int] = [node]
     sub_graph: Graph = dict()
     sub_index: GraphIndex = dict()
+    queue: list[int] = [node]
 
     while queue:
         node = queue.pop(0)
         if node not in visited:
+            # Copying and treating the unvisited node.
             visited.add(node)
-            # Copying.
             sub_graph[node] = source.get(
                 node, 
-                numpy.empty((0,), dtype=numpy.uint32
-            ))
+                NULL_IMAGE_LIST.copy(),  
+            )
             sub_index[node] = source_index[node]
 
+            # Queue unvisited node's neighbors.
             for neighbor in source.get(node, []):
                 if neighbor not in visited:
                     queue.append(int(neighbor))

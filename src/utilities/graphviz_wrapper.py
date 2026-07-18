@@ -8,9 +8,10 @@ import time
 
 import graphviz  # type: ignore[import-untyped]
 
+from utilities.definitions import FileFormat
 from utilities import graphics, graphing
-from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPHVIZ, FileFormat, LayoutEngine
-from tic_tac_toe_detroix23 import conditions, graphs
+from tic_tac_toe_detroix23.definitions import Graph, PATH_GRAPHVIZ, LayoutEngine
+from tic_tac_toe_detroix23 import conditions, indexing
 
 
 class GraphDrawer(graphing.GraphDrawer):
@@ -19,7 +20,7 @@ class GraphDrawer(graphing.GraphDrawer):
     """
     name: str
     graph: Graph
-    graph_index: graphs.GraphIndex
+    graph_index: indexing.GraphIndex
     node_start: int
     player_start: int
     player_count: int
@@ -33,7 +34,7 @@ class GraphDrawer(graphing.GraphDrawer):
         self,
         name: str, 
         graph: Graph,
-        graph_index: graphs.GraphIndex,
+        graph_index: indexing.GraphIndex,
         node_start: int,
         player_start: int,
         player_count: int,
@@ -79,7 +80,7 @@ class GraphDrawer(graphing.GraphDrawer):
 
     def add_node(
         self,
-        node_state: graphs.NodeState,
+        node_state: indexing.NodeState,
     ) -> None:
         """
         Node configuration to add to `dot`.

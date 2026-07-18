@@ -69,3 +69,14 @@ def assert_neq(a: object, b: object) -> Union[bool, NoReturn]:
         raise end 
 
     return True
+
+def debug_print(
+    message: str,
+    enable: bool = False, 
+    *,
+    end: str = "\n",
+    flush: bool = False
+) -> None:
+    if enable:
+        print(message, end=end, flush=flush)
+    return

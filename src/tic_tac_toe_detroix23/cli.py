@@ -2,20 +2,24 @@
 # Board game graphing: Tic-Tac-Toe.
 /src/tic_tac_toe_detroix23/cli.py
 """
+import time
 import enum
 from typing import Final, TypeVar, Type
 
+from utilities.definitions import FileFormat
 from utilities import graphing, graphviz_wrapper, pyvis_wrapper
-from tic_tac_toe_detroix23.definitions import Board, Graph, FileFormat, LayoutEngine
+from tic_tac_toe_detroix23.definitions import Board, Graph, LayoutEngine
 from tic_tac_toe_detroix23 import (
-    configurations, plays, conditions, graphs, ui, exports, optimization
+    configurations, indexing, plays, conditions, graphs, ui, exports, optimization
 )
 
-EXCEPTIONS: tuple[type[Exception], ...] = (TypeError, ValueError)
+EXCEPTIONS: tuple[Type[Exception], ...] = (TypeError, ValueError)
 
 HELP: Final[str] = """
 ## Help.
 """
+
+INPUT_YES: set[str] = {"", "y", "ye", "yes", "true", "1"}
 
 _T_INPUT = TypeVar("_T_INPUT")
 
@@ -23,10 +27,15 @@ def get_input(
     input_type: Type[_T_INPUT],
     message: str,
     default: _T_INPUT,
+    *,
+    enable: bool = True,
 ) -> _T_INPUT:
     """
     Get user input and returns converted to `_T_INPUT`.
     """
+    if not enable:
+        return default
+
     options: str = input_type.__name__
     if issubclass(input_type, enum.Enum):
         options = " | ".join(input_type.__members__.keys()) 
@@ -81,8 +90,7 @@ def draw_graph() -> None:
     Input loop to create a graph from an interactive CLI.
     """
     print("## Custom graph.")
-    print("Inputs [options](default).")
-    print()
+    print("Inputs [options](default).\n")
 
     try:    
         player_count: int = get_input(int, "Player count", 2)
@@ -92,25 +100,28 @@ def draw_graph() -> None:
             get_input(int, "Size Y of the board", 3),
         )
         win_length: int = get_input(int, "Aligned length to win", 3)
-        enable_draw: bool = input("Enable draw ? [y | n](y):").lower() in {"", "y", "ye", "yes"}
+        enable_draw: bool = input("Enable draw ? [y | n](y):").lower() in INPUT_YES
         print(f"=> `{enable_draw}`")
-        layout_engine: LayoutEngine = get_input(LayoutEngine, "Graphical engine", LayoutEngine.PYVIS)
+        layout_engine: LayoutEngine = get_input(
+            LayoutEngine, 
+            "Graphical engine", 
+            LayoutEngine.PYVIS,
+        )
 
         file_format: FileFormat
         if layout_engine not in {LayoutEngine.PYVIS}:
             file_format = get_input(FileFormat, "File format", FileFormat.SVG)
         else:
             file_format = FileFormat.SVG
-
-
+        
         print(f"""
 Global parameters:
-  - player_count={player_count};
-  - player_start={player_start};
-  - size={size};
-  - win_length={win_length};
-  - file_format={file_format};
-  - layout_engine={layout_engine};
+- player_count={player_count};
+- player_start={player_start};
+- size={size};
+- win_length={win_length};
+- file_format={file_format};
+- layout_engine={layout_engine};
         """)
 
         while True:
@@ -119,7 +130,7 @@ Global parameters:
             depth: int = get_input(int, "Depth", -1)
 
             print("\n### Generation.")
-
+            name: str = f"manual{node_start}_{size[0]}x{size[1]}_d{depth}"
             board_start: Board = configurations.reverse_image(
                 node_start,
                 player_count + 1,
@@ -145,15 +156,27 @@ Global parameters:
             # Data analysis.
             print("\n### Data analysis:")
 
-            print(f"Graph node count: \n  q={len(graph)}")
+            print(f"\nGraph node count: \n  q={len(graph)}")
 
-            graph_index: graphs.GraphIndex = graphs.indexing(
+            graph_index: indexing.GraphIndex = graphs.indexing(
                 graph,
                 node_start,
                 player_start,
                 player_count,
                 win_conditions,
                 depth_start=0,
+            )
+            
+            print("(?) cli.draw_graph() `populate_forced_wins` Start.")
+            time_populate_forced_wins: float = time.perf_counter()
+            optimization.populate_forced_wins(
+                node_start,
+                graph_index,
+                shift=1,
+            )
+            print(
+                "(?) cli.draw_graph() `populate_forced_wins` End in "
+                f"{time.perf_counter() - time_populate_forced_wins:.2f}s."
             )
 
             ## Collecting end states:
@@ -162,11 +185,11 @@ Global parameters:
                 player_count,
             )
             
-            print("End states: ")
+            print("\nEnd states: ")
             for win_state, count in end_states.items():
-                print(f"  {win_state}: {count};")
+                print(f"- {win_state}: {count};")
 
-            print("Neighbor nodes outcomes: ")
+            print("\nNeighbor nodes outcomes: ")
             player_next: int = plays.next_player(player_start, player_count)
             next_best_node: int = optimization.next_best_node(
                 node_start,
@@ -177,16 +200,8 @@ Global parameters:
                 method=optimization.NextBestNodeMethod.COUNT,
             )
             print(f"=> Next best for player i={player_next}: n={next_best_node}.")
-
-            """
-            print("Ties: ")
-            for code, state in graph_index.items():
-                if state.win_state == 0:
-                    print(f"- {code}")
-            """
                     
             # Exporting and graphing.
-            name: str = f"manual{node_start}_{size[0]}x{size[1]}_d{depth}"
             print(f"\n### Outputs (as `{name}`).")
 
             exports.play_graph(
@@ -198,16 +213,17 @@ Global parameters:
                 2
             )
 
-            if enable_draw:
-                print("Index: ")
-                print("- " + "\n- ".join([
-                    f"{state}" 
-                    for state in graph_index.values()
-                ]))
+            print("\nIndex: ")
+            print("- " + "\n- ".join([
+                f"{state}" 
+                for state in graph_index.values()
+            ]))
 
-                print("Dictionary: ")
-                print(ui.format_graph(graph))
+            print("\nDictionary: ")
+            print(ui.format_graph(graph))
 
+
+            if enable_draw:                
                 graph_drawer: graphing.GraphDrawer
 
                 if layout_engine == LayoutEngine.PYVIS:
@@ -277,7 +293,7 @@ def auto_optimum_plays() -> None:
         player_count,
         win_conditions,
     )
-    graph_index: graphs.GraphIndex = graphs.indexing(
+    graph_index: indexing.GraphIndex = graphs.indexing(
         graph,
         node,
         player,
@@ -287,7 +303,7 @@ def auto_optimum_plays() -> None:
     )
 
     print()
-    
+
     while not (
         win_conditions.is_win(node) 
         or graphs.is_leaf(graph, node)

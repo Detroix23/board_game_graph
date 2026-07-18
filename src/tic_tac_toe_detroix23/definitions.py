@@ -22,6 +22,7 @@ GraphBoard = dict[Board, BoardList]
 
 Graph = dict[int, ImageList]
 
+NULL_IMAGE_LIST: ImageList = numpy.empty((0,), dtype=numpy.uint32)
 
 PATH_GRAPHS: Final[pathlib.Path] = pathlib.Path("./data/graphs")
 PATH_GRAPHVIZ: Final[pathlib.Path] = pathlib.Path("./data/graphviz")
@@ -40,32 +41,8 @@ PLAYER_SYMBOLS: Final[list[str]] = [" ", "X", "O", "Δ", "┼", "Z"]
 
 PLAYER_COLORS: Final[list[str]] = []
 
-DEFAULT_FILE_FORMAT: Final[str] = "svg"
-
 DEFAULT_GRAPHVIZ_ENGINE: Final[str] = "dot"
 
-class FileFormat(enum.Enum):
-    """
-    # `FileFormat` for exporting.
-    """
-    DEFAULT = 0
-    SVG = 1
-    PNG = 2
-    
-    def to_str(self) -> str:
-        """
-        Convert this enumeration to its `str` representation.
-        """
-        if self != FileFormat.DEFAULT:
-            return self.name.lower()
-        else:
-            return DEFAULT_FILE_FORMAT
-        
-    def __str__(self) -> str:
-        """
-        Returns the readable name of an option.
-        """
-        return self.name
 
 class LayoutEngine(enum.Enum):
     """

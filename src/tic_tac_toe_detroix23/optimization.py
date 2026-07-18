@@ -4,7 +4,11 @@
 """
 import enum
 
+
+from utilities.definitions import Tri
+from utilities.debug import debug_print, assert_neq
 from tic_tac_toe_detroix23.definitions import Graph
+from tic_tac_toe_detroix23.indexing import GraphIndex, NodeState
 from tic_tac_toe_detroix23 import graphs
 
 class NextBestNodeMethod(enum.Enum):
@@ -18,7 +22,7 @@ class NextBestNodeMethod(enum.Enum):
 def next_best_node(
     starting_node: int,
     graph: Graph,
-    graph_index: graphs.GraphIndex,
+    graph_index: GraphIndex,
     player: int,
     player_count: int,
     method: NextBestNodeMethod = NextBestNodeMethod.COUNT,
@@ -73,7 +77,7 @@ def next_best_node(
 
             nodes.append((
                 int(starting_neighbors),
-                f"node={starting_neighbors: <5} ratio={ratio}, "
+                f"node={starting_neighbors: <5} ratio={ratio} "
                 f"outcomes={outcomes} c={outcomes_count};"
             ))
 
@@ -83,3 +87,102 @@ def next_best_node(
     ]))
 
     return best_node
+
+
+def populate_forced_wins(
+    node: int,
+    graph_index: GraphIndex,
+    debug: bool = False,
+    *,
+    shift: int = 0,
+) -> None:
+    """
+    Update the `graph_index` to find recursively forced wins.
+
+    Looks for `node` if it exists a forced win 
+    for all combinations of plays of the opponents.
+
+    **Arguments**:
+    - `node`: `int`,
+    - `graph_index`: `GraphIndex`,
+    - `short_circuit`: `bool`, allows the neighbors loop to be broken.
+        - it allows faster check for `node`;
+        - but does not ensure that all nodes are checked.
+    
+    **Todo**:
+    - `shift` is currently limited to `0` and `1`.
+    - depth-search only available for 2 players.
+    """
+    def body(
+        node: int,
+        graph_index: GraphIndex,
+        debug: bool,
+    ) -> Tri:
+        """
+        `populate_forced_win` recursive body.
+        """
+        state: NodeState = graph_index[node]
+        debug_print(f"(?) graphs.populate_forced_wins(node={node}) Start.", debug)
+
+        if (
+            state.neighbors is None 
+            or state.is_leaf()
+        ):
+            # Base case: leaf.
+            state.forced_win = (
+                Tri.TRUE
+                if state.is_winning()
+                else Tri.FALSE
+            )
+
+            debug_print(
+                f"(?) graphs.populate_forced_wins(node={node}) "
+                f"End in base-case with {state.forced_win}.",
+                debug,
+            )
+            return state.forced_win
+
+        else:
+            # Recursion.
+            forced: Tri = Tri.TRUE
+
+            # 2-nested loop: only for 2 players.
+            for neighbor1 in state.neighbors:
+                state1: NodeState = graph_index[int(neighbor1)]
+                forced1: Tri = Tri.FALSE
+
+                if state1.neighbors is not None:
+                    for neighbor2 in state1.neighbors:
+                        state2: NodeState = graph_index[int(neighbor2)]
+                        # Recurse if not initialized (`NONE`).
+                        if state2.forced_win == Tri.NONE:
+                            state2.forced_win = body(
+                                node=int(neighbor2),
+                                graph_index=graph_index,
+                                debug=debug,
+                            )
+                        
+                        assert_neq(state2.forced_win, Tri.NONE)
+                        forced1 |= state2.forced_win
+
+                forced |= forced1
+
+            state.forced_win = forced
+            debug_print(
+                f"(?) graphs.populate_forced_wins(node={node}) "
+                f"End with {forced}.",
+                debug,
+                flush=True,
+            )
+            assert_neq(forced, Tri.NONE)
+            return forced
+
+    state: NodeState = graph_index[node]
+    if shift == 1 and state.neighbors is not None:
+        for neighbor in state.neighbors:
+            body(int(neighbor), graph_index, debug)    
+
+    else:
+        body(node, graph_index, debug)
+
+    return

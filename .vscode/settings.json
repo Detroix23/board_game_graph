@@ -12,5 +12,7 @@
     "python.analysis.inlayHints.variableTypes": true,
     "python.analysis.typeCheckingMode": "strict",
     "editor.detectIndentation": false,
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "python.analysis.typeEvaluation.deprecateTypingAliases": false,
+    "python.analysis.typeEvaluation.disableBytesTypePromotions": true
 }

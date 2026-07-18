@@ -3,9 +3,18 @@
 /src/tic_tac_toe_detroix23/__main__.py
 """
 import sys
+import time
+
+print("\n# Board game graphing.\n")
+time_import: float = time.perf_counter()
 
 from utilities.arguments import Parser, Token
 from tic_tac_toe_detroix23 import cli, tests
+
+print(
+    "(?) tic_tac_toe_detroix23.__main__ "
+    f"Imports loaded in {time.perf_counter() - time_import:.2f}s."
+)
 
 def argument_decider(arguments: list[str]) -> None:
     """
@@ -54,7 +63,6 @@ def main() -> None:
     """
     Main entry point for `tic_tac_toe_detroix23`.
     """
-    print("\n# Board game graphing.\n")
 
     argument_decider(sys.argv)
 
