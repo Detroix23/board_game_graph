@@ -33,7 +33,7 @@ class Tri(enum.Enum):
 
     def __or__(self, other: 'Tri') -> 'Tri':
         """
-        `or` operation with `NONE` (-1), `FALSE` (0), `TRUE` (1).
+        _or_ (`|`) operation with `NONE` (-1), `FALSE` (0), `TRUE` (1).
 
         |or    | -1| 0 | 1 |
         |--    | --| --| --|
@@ -50,6 +50,34 @@ class Tri(enum.Enum):
 
         else:
             if other is Tri.TRUE:
+                return other
+            else:
+                return Tri.NONE
+
+    def __and__(self, other: 'Tri') -> 'Tri':
+        """
+        _and_ (`&`) operation with `NONE` (-1), `FALSE` (0), `TRUE` (1).
+
+        |and   | -1| 0 | 1 |
+        |--    | --| --| --|
+        |**-1**| -1| 0 | -1|
+        |**0** | 0 | 0 | 0 |
+        |**1** | -1| 0 | 1 |
+
+        """
+        if self is Tri.TRUE:
+            if other is Tri.TRUE:
+                return Tri.TRUE
+            if other is Tri.FALSE:
+                return other
+            else:
+                return other
+        
+        if self is Tri.FALSE:
+            return self
+
+        else:
+            if other is Tri.FALSE:
                 return other
             else:
                 return Tri.NONE

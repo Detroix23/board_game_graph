@@ -100,12 +100,12 @@ def draw_graph() -> None:
             get_input(int, "Size Y of the board", 3),
         )
         win_length: int = get_input(int, "Aligned length to win", 3)
-        enable_draw: bool = input("Enable draw ? [y | n](y):").lower() in INPUT_YES
-        print(f"=> `{enable_draw}`")
+        draw_depth: int = max(0, get_input(int, "Draw depth limit", 2))
         layout_engine: LayoutEngine = get_input(
             LayoutEngine, 
             "Graphical engine", 
             LayoutEngine.PYVIS,
+            enable=draw_depth == 0
         )
 
         file_format: FileFormat
@@ -195,7 +195,7 @@ Global parameters:
                 node_start,
                 graph,
                 graph_index,
-                player_start,
+                player_next,
                 player_count,
                 method=optimization.NextBestNodeMethod.COUNT,
             )
@@ -217,18 +217,19 @@ Global parameters:
             print("- " + "\n- ".join([
                 f"{state}" 
                 for state in graph_index.values()
-            ]))
+            ][:50]))
 
             print("\nDictionary: ")
             print(ui.format_graph(graph))
 
 
-            if enable_draw:                
+            if draw_depth > 0:                
                 graph_drawer: graphing.GraphDrawer
 
                 if layout_engine == LayoutEngine.PYVIS:
                     graph_drawer = pyvis_wrapper.GraphDrawer(
                         name,
+                        draw_depth,
                         graph,
                         graph_index,
                         node_start,

@@ -8,6 +8,7 @@ import pathlib
 
 import pyvis  # type: ignore[import-untyped]
 
+from utilities.debug import debug_print
 from utilities import graphics, graphing
 from tic_tac_toe_detroix23.definitions import Graph, PLAYER_SYMBOLS, PATH_PYVIS
 from tic_tac_toe_detroix23 import configurations, conditions, indexing, ui
@@ -71,6 +72,7 @@ class GraphDrawer(graphing.GraphDrawer):
     # Complete `GraphDrawer` with `graphviz`.
     """
     name: str
+    depth: int
     graph: Graph
     graph_index: indexing.GraphIndex
     node_start: int
@@ -78,12 +80,15 @@ class GraphDrawer(graphing.GraphDrawer):
     player_count: int
     size: tuple[int, int]
     win_conditions: conditions.WinConditions
-    
+    player_symbols: list[str]
+    debug: bool
+
     network: pyvis.network.Network
 
     def __init__(
         self,
         name: str, 
+        depth: int,
         graph: Graph,
         graph_index: indexing.GraphIndex,
         node_start: int,
@@ -91,11 +96,14 @@ class GraphDrawer(graphing.GraphDrawer):
         player_count: int,
         size: tuple[int, int],
         win_conditions: conditions.WinConditions,
+        *,
+        debug: bool = False,
     ) -> None:
         """
         Instantiate a `GraphDrawer` and the `dot`. Does not draw the graph.
         """
         self.name = name
+        self.depth = depth
         self.graph = graph
         self.graph_index = graph_index
         self.node_start = node_start
@@ -111,43 +119,47 @@ class GraphDrawer(graphing.GraphDrawer):
             select_menu=True,      
             cdn_resources="remote", 
         )
+        self.player_symbols = PLAYER_SYMBOLS
+        self.player_symbols[0] = "_"
+        self.debug = debug
 
         self.populate()
 
         return
     
-    def populate(self) -> None:
+    def add_node(
+        self,
+        node: int,
+        state: indexing.NodeState,
+    ) -> None:
         """
-        Update `pyvis`' `Network` from `self` `graph` (`dict`).
+        Add a node to the `pyvis` wrapper.
         """
-        player_symbols: list[str] = PLAYER_SYMBOLS
-        player_symbols[0] = "_"
+        # Normal shape.
+        shape: str = Shape.DOT
+        scale: int = max(1, len(self.graph.get(node, [])))
+        additional_settings: dict[str, int] = {}
+        if state.win_state > 0:
+            # Win.
+            shape = Shape.TRIANGLE
+        elif state.win_state == 0:
+            # Tie.
+            shape = Shape.SQUARE
+        elif node == self.node_start:
+            # Start.
+            shape = Shape.STAR
+            additional_settings |= {
+                "x": 0, 
+                "y": 0, 
+                "physics": False
+            }
 
-        # Nodes.
-        for node, state in self.graph_index.items():
-            # Normal shape.
-            shape: str = Shape.DOT
-            scale: int = max(1, len(self.graph.get(node, [])))
-            additional_settings: dict[str, int] = {}
-            if state.win_state > 0:
-                # Win.
-                shape = Shape.TRIANGLE
-            elif state.win_state == 0:
-                # Tie.
-                shape = Shape.SQUARE
-            elif node == self.node_start:
-                # Start.
-                shape = Shape.STAR
-                additional_settings |= {
-                    "x": 0, 
-                    "y": 0, 
-                    "physics": False
-                }
-
-            self.network.add_node(  # pyright: ignore[reportUnknownMemberType]
-                node,
-                label=f"{node} {'★' if state.forced_win else ''}",
-                title=ui.format_board(
+        self.network.add_node(  # pyright: ignore[reportUnknownMemberType]
+            node,
+            label=f"{node} {'★' if state.forced_win else ''}",
+            title=(
+                f"Player {state.player} played.\n"
+                f"{ui.format_board(
                     configurations.reverse_image(
                         node, 
                         self.player_count + 1, 
@@ -157,26 +169,49 @@ class GraphDrawer(graphing.GraphDrawer):
                     horizontal="",
                     intersection="",
                     lines="",
-                    player_symbols=player_symbols,
-                ),
-                color="#"+graphics.hsv_to_rgb_hex(
-                    (state.player - 1) / self.player_count, 
-                    0.9, 
-                    0.9,
-                ),
-                shape=shape,
-                value=scale * 60,
-                size=scale * 60,
-                **additional_settings,
-            )
+                    player_symbols=self.player_symbols,
+                )}"
+                f"{'Forced win.' if state.forced_win else ''}",
+            ),
+            color="#"+graphics.hsv_to_rgb_hex(
+                (state.player - 1) / self.player_count, 
+                0.9, 
+                0.9,
+            ),
+            shape=shape,
+            value=scale * 60,
+            size=scale * 60,
+            **additional_settings,
+        )
+        return
+
+    def populate(self) -> None:
+        """
+        Update `pyvis`' `Network` from `self` `graph` (`dict`).
+        """
+        debug_print(
+            f"(?) utilities.pyvis_wrapper.GraphDrawer.populate() Start with depth={self.depth}.",
+            self.debug,
+        )
+        # Nodes.
+        for node, state in self.graph_index.items():
+            if state.depth <= self.depth:
+                debug_print(f"- add {state}", self.debug)
+                self.add_node(node, state)
 
         # Edges.
         for node, neighbors in self.graph.items():
-            self.network.add_edges([  # pyright: ignore[reportUnknownMemberType]
-                (int(node), int(neighbor))
-                for neighbor in neighbors
-            ])
+            if self.graph_index[node].depth < self.depth:
+                debug_print(f"- link {node} -> {neighbors}", self.debug)
+                self.network.add_edges([  # pyright: ignore[reportUnknownMemberType]
+                    (int(node), int(neighbor))
+                    for neighbor in neighbors
+                ])
 
+        debug_print(
+            f"(?) utilities.pyvis_wrapper.GraphDrawer.populate() End.",
+            self.debug,
+        )
         return
 
     def draw(self) -> None:

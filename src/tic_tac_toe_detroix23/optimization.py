@@ -165,7 +165,7 @@ def populate_forced_wins(
                         assert_neq(state2.forced_win, Tri.NONE)
                         forced1 |= state2.forced_win
 
-                forced |= forced1
+                forced &= forced1
 
             state.forced_win = forced
             debug_print(

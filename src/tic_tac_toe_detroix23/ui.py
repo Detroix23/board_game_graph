@@ -4,7 +4,7 @@
 """
 from tic_tac_toe_detroix23.definitions import Graph, Board, PLAYER_SYMBOLS
 
-def format_graph(graph: Graph) -> str:
+def format_graph(graph: Graph, limit: int = 50) -> str:
     """
     Returns a formatted string of `graph`.
 
@@ -20,9 +20,13 @@ def format_graph(graph: Graph) -> str:
         ...
     """
     return "\n".join([
-        f"- {node}: {" ".join(str(neighbor) for neighbor in neighbors)};"
+        f"- {node}: {(
+            " ".join(str(neighbor) for neighbor in neighbors) 
+            if len(neighbors) > 0 
+            else "x"
+        )};"
         for node, neighbors in graph.items()
-    ])
+    ][:limit])
 
 def format_board(
     board: Board, 
